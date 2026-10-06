@@ -6,7 +6,7 @@ set -euo pipefail
 UUID="control-kill@lucaswotta.github.io"
 REPO="https://github.com/lucaswotta/control-kill.git"
 DEST="$HOME/.local/share/gnome-shell/extensions/$UUID"
-FILES=(extension.js stylesheet.css metadata.json)
+FILES=(extension.js prefs.js metadata.json)
 
 src="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
@@ -20,10 +20,12 @@ if [[ ! -f "$src/extension.js" ]]; then
     src="$tmp/src"
 fi
 
-mkdir -p "$DEST"
+mkdir -p "$DEST/schemas"
 for f in "${FILES[@]}"; do
     cp "$src/$f" "$DEST/$f"
 done
+cp "$src"/schemas/*.gschema.xml "$DEST/schemas/"
+glib-compile-schemas "$DEST/schemas"
 
 echo "Installed to $DEST"
 echo

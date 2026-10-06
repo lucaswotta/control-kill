@@ -17,7 +17,9 @@ disable:
 	gnome-extensions disable $(UUID)
 
 pack:
-	gnome-extensions pack --force --extra-source=stylesheet.css .
+	gnome-extensions pack --force \
+		--schema=schemas/org.gnome.shell.extensions.control-kill.gschema.xml \
+		--extra-source=prefs.js .
 	@echo "Built $(UUID).shell-extension.zip"
 
 clean:

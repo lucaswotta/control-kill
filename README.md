@@ -52,6 +52,17 @@ gnome-extensions enable control-kill@lucaswotta.github.io
 
 Release <kbd>Ctrl</kbd> and the buttons go back to normal.
 
+### Choosing the colour
+
+Red is the default. Any colour works:
+
+```sh
+gnome-extensions prefs control-kill@lucaswotta.github.io
+```
+
+The text and the border are derived from whatever you pick, so a light colour
+gets dark text and stays readable.
+
 > [!WARNING]
 > Killing is killing. The process dies without saving, and it takes every window
 > of that process with it — killing one Chrome window kills Chrome. That is why
@@ -59,11 +70,10 @@ Release <kbd>Ctrl</kbd> and the buttons go back to normal.
 
 ## How it works
 
-The close button is an `St.Button` with the `window-close` style class, so the
-red is plain CSS: a style class goes on `overviewGroup` while the modifier is
-held, and `.control-kill-armed .window-close` outranks the shell theme. Arming
-is tracked from `captured-event` on the stage, and only while the overview is
-open.
+Arming is tracked from `captured-event` on the stage, and only while the
+overview is open. While armed, each close button gets an inline style built
+from the configured colour — foreground and border are derived from its
+luminance — and a short scale pop.
 
 The kill resolves a PID in three steps:
 
@@ -93,7 +103,7 @@ it.
 ## Development
 
 ```sh
-make install      # copy the three files into place
+make install      # copy files into place and compile the schema
 make enable       # or disable / pack / uninstall
 ```
 

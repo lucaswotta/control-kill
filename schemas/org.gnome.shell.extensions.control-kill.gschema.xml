@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.control-kill"
+          path="/org/gnome/shell/extensions/control-kill/">
+    <key name="armed-color" type="s">
+      <default>'#c01c28'</default>
+      <summary>Armed colour</summary>
+      <description>
+        Colour of the close buttons while the modifier is held, as a #RRGGBB
+        string.
+      </description>
+    </key>
+  </schema>
+</schemalist>

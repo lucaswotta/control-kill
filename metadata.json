@@ -9,5 +9,6 @@
     "48"
   ],
   "url": "https://github.com/lucaswotta/control-kill",
-  "version": 1
+  "version": 1,
+  "settings-schema": "org.gnome.shell.extensions.control-kill"
 }

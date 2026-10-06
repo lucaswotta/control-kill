@@ -22,7 +22,7 @@ const DRY_RUN = false;
 const MODIFIER = Clutter.ModifierType.CONTROL_MASK;
 const MODIFIER_KEYS = [Clutter.KEY_Control_L, Clutter.KEY_Control_R];
 
-const ARMED_CLASS = 'control-kill-armed';
+const DEFAULT_COLOR = '#c01c28';
 
 const POP_SCALE = 1.25;
 const POP_IN_MS = 120;
@@ -30,6 +30,36 @@ const POP_OUT_MS = 220;
 
 /** Every live WindowPreview, so the pop can reach its close button. */
 const previews = new Set();
+
+/** The colour while armed, or null when not armed. */
+let armedColor = null;
+
+function parseHex(hex) {
+    const m = /^#?([\da-f]{2})([\da-f]{2})([\da-f]{2})$/i.exec(hex ?? '');
+    return m ? [1, 2, 3].map(i => parseInt(m[i], 16)) : null;
+}
+
+/**
+ * Inline style for the close button. Foreground and border are derived from
+ * the chosen colour so that any colour stays readable, light or dark.
+ */
+function styleFor(hex, hovered) {
+    const rgb = parseHex(hex) ?? parseHex(DEFAULT_COLOR);
+    const lum = (0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2]) / 255;
+    const toward = lum > 0.6 ? 0 : 255;
+    const mix = (c, amount) => Math.round(c + (toward - c) * amount);
+
+    const bg = hovered ? rgb.map(c => mix(c, 0.18)) : rgb;
+    const border = rgb.map(c => mix(c, 0.45));
+
+    return `background-color: rgb(${bg.join(',')}); ` +
+           `color: ${lum > 0.6 ? '#000000' : '#ffffff'}; ` +
+           `border: 2px solid rgb(${border.join(',')});`;
+}
+
+function applyStyle(button) {
+    button.set_style(armedColor ? styleFor(armedColor, button.hover) : null);
+}
 
 function shellPid() {
     try {
@@ -186,6 +216,7 @@ export default class ControlKillExtension extends Extension {
     enable() {
         this._armed = false;
         this._capturedEventId = 0;
+        this._settings = this.getSettings();
 
         this._originalInit = WindowPreview.prototype._init;
         const originalInit = this._originalInit;
@@ -193,6 +224,18 @@ export default class ControlKillExtension extends Extension {
             const ret = originalInit.apply(this, args);
             previews.add(this);
             this.connect('destroy', () => previews.delete(this));
+
+            const button = this._closeButton;
+            // The button only appears on hover, so one that shows up while the
+            // modifier is already held has to be caught here.
+            button?.connect('notify::visible', () => {
+                if (!armedColor || !button.visible)
+                    return;
+                applyStyle(button);
+                popButton(button);
+            });
+            button?.connect('notify::hover', () => applyStyle(button));
+
             return ret;
         };
 
@@ -239,6 +282,8 @@ export default class ControlKillExtension extends Extension {
         }
 
         previews.clear();
+        armedColor = null;
+        this._settings = null;
     }
 
     _startTracking() {
@@ -282,16 +327,15 @@ export default class ControlKillExtension extends Extension {
             return;
         this._armed = armed;
 
-        const group = Main.layoutManager.overviewGroup;
-        if (armed)
-            group.add_style_class_name(ARMED_CLASS);
-        else
-            group.remove_style_class_name(ARMED_CLASS);
+        armedColor = armed
+            ? this._settings?.get_string('armed-color') ?? DEFAULT_COLOR
+            : null;
 
         for (const preview of previews) {
             const button = preview._closeButton;
             if (!button)
                 continue;
+            applyStyle(button);
             if (armed && button.visible)
                 popButton(button);
             else
