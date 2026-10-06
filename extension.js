@@ -1,0 +1,301 @@
+/* extension.js
+ *
+ * Control Kill — hold Control in the overview to turn window close buttons
+ * into kill buttons.
+ *
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ * Copyright (C) 2026 Lucas Motta
+ */
+
+import Clutter from 'gi://Clutter';
+import Gio from 'gi://Gio';
+import GLib from 'gi://GLib';
+import Shell from 'gi://Shell';
+import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
+import {WindowPreview} from 'resource:///org/gnome/shell/ui/windowPreview.js';
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+
+/** Log the chosen target instead of killing it. Useful when hacking on this. */
+const DRY_RUN = false;
+
+/** Held modifier that arms the kill, and the key symbols that report it. */
+const MODIFIER = Clutter.ModifierType.CONTROL_MASK;
+const MODIFIER_KEYS = [Clutter.KEY_Control_L, Clutter.KEY_Control_R];
+
+const ARMED_CLASS = 'control-kill-armed';
+
+const POP_SCALE = 1.25;
+const POP_IN_MS = 120;
+const POP_OUT_MS = 220;
+
+/** Every live WindowPreview, so the pop can reach its close button. */
+const previews = new Set();
+
+function shellPid() {
+    try {
+        return parseInt(GLib.file_read_link('/proc/self'), 10);
+    } catch {
+        return -1;
+    }
+}
+
+function describe(window) {
+    const safe = fn => {
+        try {
+            return fn();
+        } catch (e) {
+            return `<error: ${e.message}>`;
+        }
+    };
+    return [
+        `title="${safe(() => window.get_title())}"`,
+        `wm_class=${safe(() => window.get_wm_class())}`,
+        `pid=${safe(() => window.get_pid())}`,
+        `client_type=${safe(() => window.get_client_type())}`,
+    ].join(' ');
+}
+
+function sigkill(pid, why) {
+    // Last gate before a signal leaves this extension. Callers check too, but
+    // this is the one that cannot be bypassed by a future code path.
+    const mine = shellPid();
+    if (!Number.isInteger(pid) || pid <= 1 || pid === mine) {
+        console.warn(`[control-kill] refused SIGKILL on ${pid} (shell=${mine}, ${why})`);
+        return;
+    }
+    console.warn(`[control-kill] SIGKILL ${pid} (${why})`);
+    GLib.spawn_command_line_async(`kill -9 ${pid}`);
+}
+
+/** "org.gnome.Nautilus.desktop" -> "org.gnome.Nautilus" */
+function busNameFor(window) {
+    try {
+        const app = Shell.WindowTracker.get_default().get_window_app(window);
+        const id = app?.get_id();
+        if (!id)
+            return null;
+        const name = id.replace(/\.desktop$/, '');
+        return /^[A-Za-z_][\w-]*(\.[A-Za-z_][\w-]*)+$/.test(name) ? name : null;
+    } catch {
+        return null;
+    }
+}
+
+/** No trustworthy PID anywhere: ask politely and leave it at that. */
+function politeClose(window, reason) {
+    console.warn(`[control-kill] no trustworthy PID (${reason}); sending a close request`);
+    try {
+        window.delete(global.get_current_time());
+    } catch (e) {
+        console.warn(`[control-kill] delete() failed: ${e.message}`);
+    }
+}
+
+/**
+ * Ask the session bus who owns the app's name. The bus daemon answers, not the
+ * app, so this still works while the app is hung. Async on purpose: a sync
+ * D-Bus call here would block the compositor.
+ */
+function killViaBus(window, mine) {
+    const busName = busNameFor(window);
+    if (!busName) {
+        politeClose(window, 'app owns no bus name');
+        return;
+    }
+
+    Gio.DBus.session.call(
+        'org.freedesktop.DBus',
+        '/org/freedesktop/DBus',
+        'org.freedesktop.DBus',
+        'GetConnectionUnixProcessID',
+        new GLib.Variant('(s)', [busName]),
+        new GLib.VariantType('(u)'),
+        Gio.DBusCallFlags.NONE,
+        500,
+        null,
+        (bus, res) => {
+            let pid = 0;
+            try {
+                [pid] = bus.call_finish(res).deepUnpack();
+            } catch (e) {
+                politeClose(window, `bus lookup failed: ${e.message}`);
+                return;
+            }
+
+            if (pid > 1 && pid !== mine)
+                sigkill(pid, `via ${busName}`);
+            else
+                politeClose(window, `bus returned an unusable PID (${pid})`);
+        });
+}
+
+/**
+ * Do not call Meta.Window.kill() here.
+ *
+ * meta_window_kill() (mutter, src/core/delete.c) runs kill(pid, 9) on whatever
+ * meta_window_get_pid() reports. On Wayland that PID comes from SO_PEERCRED on
+ * the client socket, so when the compositor created the socket it is the
+ * compositor's own PID. Calling kill() on such a window ends the session.
+ * See the README.
+ */
+function killWindow(window) {
+    const mine = shellPid();
+    const direct = window.get_pid();
+
+    if (DRY_RUN) {
+        console.warn(`[control-kill][dry-run] would target: ${describe(window)} shell_pid=${mine} bus=${busNameFor(window)}`);
+        return;
+    }
+
+    console.warn(`[control-kill] target: ${describe(window)} shell_pid=${mine}`);
+
+    if (direct > 1 && direct !== mine) {
+        sigkill(direct, 'window PID');
+        return;
+    }
+
+    killViaBus(window, mine);
+}
+
+function popButton(button) {
+    button.remove_all_transitions();
+    button.set_pivot_point(0.5, 0.5);
+    button.set_scale(1, 1);
+    button.ease({
+        scaleX: POP_SCALE,
+        scaleY: POP_SCALE,
+        duration: POP_IN_MS,
+        mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+        onComplete: () => {
+            button.ease({
+                scaleX: 1,
+                scaleY: 1,
+                duration: POP_OUT_MS,
+                mode: Clutter.AnimationMode.EASE_OUT_BACK,
+            });
+        },
+    });
+}
+
+function resetButton(button) {
+    button.remove_all_transitions();
+    button.set_scale(1, 1);
+}
+
+export default class ControlKillExtension extends Extension {
+    enable() {
+        this._armed = false;
+        this._capturedEventId = 0;
+
+        this._originalInit = WindowPreview.prototype._init;
+        const originalInit = this._originalInit;
+        WindowPreview.prototype._init = function (...args) {
+            const ret = originalInit.apply(this, args);
+            previews.add(this);
+            this.connect('destroy', () => previews.delete(this));
+            return ret;
+        };
+
+        // With the modifier held the X kills; otherwise it behaves as it always
+        // did, by calling straight through to the original.
+        this._originalDeleteAll = WindowPreview.prototype._deleteAll;
+        const originalDeleteAll = this._originalDeleteAll;
+        WindowPreview.prototype._deleteAll = function () {
+            const [, , mods] = global.get_pointer();
+            if ((mods & MODIFIER) === 0) {
+                originalDeleteAll.call(this);
+                return;
+            }
+
+            const windows = this.window_container.layout_manager.get_windows();
+            for (const window of windows.reverse())
+                killWindow(window);
+
+            this._closeRequested = true;
+        };
+
+        this._overviewIds = [
+            Main.overview.connect('showing', () => this._startTracking()),
+            Main.overview.connect('hidden', () => this._stopTracking()),
+        ];
+        if (Main.overview.visible)
+            this._startTracking();
+    }
+
+    disable() {
+        this._stopTracking();
+
+        for (const id of this._overviewIds ?? [])
+            Main.overview.disconnect(id);
+        this._overviewIds = null;
+
+        if (this._originalDeleteAll) {
+            WindowPreview.prototype._deleteAll = this._originalDeleteAll;
+            this._originalDeleteAll = null;
+        }
+        if (this._originalInit) {
+            WindowPreview.prototype._init = this._originalInit;
+            this._originalInit = null;
+        }
+
+        previews.clear();
+    }
+
+    _startTracking() {
+        if (this._capturedEventId)
+            return;
+        this._capturedEventId = global.stage.connect(
+            'captured-event', (_actor, event) => this._onCapturedEvent(event));
+    }
+
+    _stopTracking() {
+        if (this._capturedEventId) {
+            global.stage.disconnect(this._capturedEventId);
+            this._capturedEventId = 0;
+        }
+        this._setArmed(false);
+    }
+
+    _onCapturedEvent(event) {
+        const type = event.type();
+
+        if (type === Clutter.EventType.KEY_PRESS || type === Clutter.EventType.KEY_RELEASE) {
+            // On the modifier's own press and release the event state does not
+            // include it yet, so read the key symbol instead.
+            if (MODIFIER_KEYS.includes(event.get_key_symbol()))
+                this._setArmed(type === Clutter.EventType.KEY_PRESS);
+            else
+                this._setArmed((event.get_state() & MODIFIER) !== 0);
+        } else if (type === Clutter.EventType.MOTION ||
+                   type === Clutter.EventType.ENTER ||
+                   type === Clutter.EventType.BUTTON_PRESS) {
+            // Catches entering the overview with the key already held, and any
+            // release that went to another actor.
+            this._setArmed((event.get_state() & MODIFIER) !== 0);
+        }
+
+        return Clutter.EVENT_PROPAGATE;
+    }
+
+    _setArmed(armed) {
+        if (armed === this._armed)
+            return;
+        this._armed = armed;
+
+        const group = Main.layoutManager.overviewGroup;
+        if (armed)
+            group.add_style_class_name(ARMED_CLASS);
+        else
+            group.remove_style_class_name(ARMED_CLASS);
+
+        for (const preview of previews) {
+            const button = preview._closeButton;
+            if (!button)
+                continue;
+            if (armed && button.visible)
+                popButton(button);
+            else
+                resetButton(button);
+        }
+    }
+}

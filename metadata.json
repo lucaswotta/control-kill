@@ -1,0 +1,13 @@
+{
+  "uuid": "control-kill@lucaswotta.github.io",
+  "name": "Control Kill",
+  "description": "Hold Control in the Activities overview and every window close button turns red. Click it to kill the application instead of politely asking it to close — the fix for frozen apps that ignore the X.",
+  "shell-version": [
+    "45",
+    "46",
+    "47",
+    "48"
+  ],
+  "url": "https://github.com/lucaswotta/control-kill",
+  "version": 1
+}
