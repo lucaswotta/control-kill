@@ -25,6 +25,15 @@ const MODIFIER_KEYS = [Clutter.KEY_Control_L, Clutter.KEY_Control_R];
 const DEFAULT_COLOR = '#c01c28';
 const DEFAULT_SOUND = 'sounds/kill.oga';
 
+/**
+ * A tenth of a second of silence. Audio outputs sleep when idle, and a
+ * Bluetooth one takes longer to wake than the kill sound lasts, so the sound
+ * would be swallowed whole. Playing this when a kill becomes likely wakes the
+ * output in time.
+ */
+const WAKE_SOUND = 'sounds/wake.wav';
+const WAKE_INTERVAL_US = 3 * GLib.USEC_PER_SEC;
+
 const POP_SCALE = 1.25;
 const POP_IN_MS = 120;
 const POP_OUT_MS = 220;
@@ -348,11 +357,30 @@ export default class ControlKillExtension extends Extension {
         }
     }
 
+    /** See WAKE_SOUND. Throttled: the output stays awake for a few seconds. */
+    _wakeAudio() {
+        if (DRY_RUN || !this._settings?.get_boolean('sound-enabled'))
+            return;
+
+        const now = GLib.get_monotonic_time();
+        if (now - (this._lastWake ?? 0) < WAKE_INTERVAL_US)
+            return;
+        this._lastWake = now;
+
+        try {
+            global.display.get_sound_player().play_from_file(
+                this.dir.resolve_relative_path(WAKE_SOUND), 'Control Kill', null);
+        } catch (e) {
+            console.warn(`[control-kill] could not wake the audio output: ${e.message}`);
+        }
+    }
+
     _applyStyle(button) {
         button.set_style(this._armedColor ? styleFor(this._armedColor, button.hover) : null);
     }
 
     _startTracking() {
+        this._wakeAudio();
         if (this._capturedEventId)
             return;
         this._capturedEventId = global.stage.connect(
@@ -392,6 +420,8 @@ export default class ControlKillExtension extends Extension {
         if (armed === this._armed)
             return;
         this._armed = armed;
+        if (armed)
+            this._wakeAudio();
 
         this._armedColor = armed
             ? this._settings?.get_string('armed-color') ?? DEFAULT_COLOR

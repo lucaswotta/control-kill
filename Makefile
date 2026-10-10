@@ -1,7 +1,7 @@
 UUID    = control-kill@lucaswotta.github.io
 DOMAIN  = control-kill
 SOURCES = extension.js prefs.js metadata.json LICENSE
-SOUNDS  = $(wildcard sounds/*.oga)
+SOUNDS  = $(wildcard sounds/*.oga sounds/*.wav)
 SCHEMA  = schemas/org.gnome.shell.extensions.control-kill.gschema.xml
 LINGUAS = $(shell cat po/LINGUAS)
 BUILD   = build
