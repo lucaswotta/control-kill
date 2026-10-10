@@ -43,7 +43,8 @@ mark_enabled() {
 stage_from_checkout() {
     local src="$1" stage="$2"
     cp "$src"/{extension.js,prefs.js,metadata.json,LICENSE} "$stage/"
-    mkdir -p "$stage/schemas" "$stage/sounds"
+    mkdir -p "$stage/lib" "$stage/schemas" "$stage/sounds"
+    cp "$src"/lib/*.js "$stage/lib/"
     cp "$src"/schemas/*.gschema.xml "$stage/schemas/"
     cp "$src"/sounds/*.oga "$src"/sounds/*.wav "$stage/sounds/"
 

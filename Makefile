@@ -1,13 +1,14 @@
 UUID    = control-kill@lucaswotta.github.io
 DOMAIN  = control-kill
 SOURCES = extension.js prefs.js metadata.json LICENSE
+LIB     = $(wildcard lib/*.js)
 SOUNDS  = $(wildcard sounds/*.oga sounds/*.wav)
 SCHEMA  = schemas/org.gnome.shell.extensions.control-kill.gschema.xml
 LINGUAS = $(shell cat po/LINGUAS)
 BUILD   = build
 ZIP     = $(UUID).shell-extension.zip
 
-.PHONY: all zip install uninstall enable disable prefs log pot lint check clean
+.PHONY: all zip install uninstall enable disable prefs log pot lint test test-integration test-shell check clean
 
 all: zip
 
@@ -15,10 +16,11 @@ all: zip
 # No compiled schema inside: since GNOME 44 the shell compiles it on install.
 zip: $(ZIP)
 
-$(ZIP): $(SOURCES) $(SOUNDS) $(SCHEMA) $(wildcard po/*.po) po/LINGUAS
+$(ZIP): $(SOURCES) $(LIB) $(SOUNDS) $(SCHEMA) $(wildcard po/*.po) po/LINGUAS
 	rm -rf $(BUILD) $(ZIP)
-	mkdir -p $(BUILD)/schemas $(BUILD)/sounds
+	mkdir -p $(BUILD)/lib $(BUILD)/schemas $(BUILD)/sounds
 	cp $(SOURCES) $(BUILD)/
+	cp $(LIB) $(BUILD)/lib/
 	cp $(SCHEMA) $(BUILD)/schemas/
 	cp $(SOUNDS) $(BUILD)/sounds/
 	for lang in $(LINGUAS); do \
@@ -60,7 +62,25 @@ pot:
 lint:
 	npx --no-install eslint .
 
-check: lint
+test:
+	node --test tests/*.test.js
+
+# Talks to the real user systemd and session bus: run it in a desktop session.
+test-integration:
+	gjs -m tests/integration.js
+
+# A private headless GNOME Shell (own session bus, settings in memory) drives
+# the installed extension. Nothing touches the running session.
+test-shell: install
+	@log=$$(mktemp); \
+	timeout 120 dbus-run-session -- env -u DISPLAY GSETTINGS_BACKEND=memory \
+		gnome-shell --headless --wayland-display=control-kill-test \
+		--virtual-monitor 1280x800 --automation-script=$(CURDIR)/tests/shell.js >$$log 2>&1; \
+	status=$$?; \
+	grep -E '^(ok|FAIL)|passed|FAILED|JS ERROR|\[control-kill\]' $$log; \
+	rm -f $$log; exit $$status
+
+check: lint test
 	glib-compile-schemas --strict --dry-run schemas
 	for po in po/*.po; do msgfmt --check --statistics -o /dev/null $$po || exit 1; done
 	shellcheck install.sh
