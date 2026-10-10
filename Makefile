@@ -1,14 +1,36 @@
-UUID = control-kill@lucaswotta.github.io
-INSTALL_DIR = $(HOME)/.local/share/gnome-shell/extensions/$(UUID)
+UUID    = control-kill@lucaswotta.github.io
+DOMAIN  = control-kill
+SOURCES = extension.js prefs.js metadata.json LICENSE
+SCHEMA  = schemas/org.gnome.shell.extensions.control-kill.gschema.xml
+LINGUAS = $(shell cat po/LINGUAS)
+BUILD   = build
+ZIP     = $(UUID).shell-extension.zip
 
-.PHONY: install uninstall enable disable pack clean
+.PHONY: all zip install uninstall enable disable prefs log pot lint check clean
+
+all: zip
+
+# The package uploaded to extensions.gnome.org and attached to releases.
+# No compiled schema inside: since GNOME 44 the shell compiles it on install.
+zip: $(ZIP)
+
+$(ZIP): $(SOURCES) $(SCHEMA) $(wildcard po/*.po) po/LINGUAS
+	rm -rf $(BUILD) $(ZIP)
+	mkdir -p $(BUILD)/schemas
+	cp $(SOURCES) $(BUILD)/
+	cp $(SCHEMA) $(BUILD)/schemas/
+	for lang in $(LINGUAS); do \
+		mkdir -p $(BUILD)/locale/$$lang/LC_MESSAGES && \
+		msgfmt --check -o $(BUILD)/locale/$$lang/LC_MESSAGES/$(DOMAIN).mo po/$$lang.po || exit 1; \
+	done
+	cd $(BUILD) && zip -qr ../$(ZIP) .
+	@echo "Built $(ZIP)"
 
 install:
 	@./install.sh
 
 uninstall:
-	rm -rf $(INSTALL_DIR)
-	@echo "Removed $(INSTALL_DIR)"
+	@./install.sh --uninstall
 
 enable:
 	gnome-extensions enable $(UUID)
@@ -16,11 +38,30 @@ enable:
 disable:
 	gnome-extensions disable $(UUID)
 
-pack:
-	gnome-extensions pack --force \
-		--schema=schemas/org.gnome.shell.extensions.control-kill.gschema.xml \
-		--extra-source=prefs.js .
-	@echo "Built $(UUID).shell-extension.zip"
+prefs:
+	gnome-extensions prefs $(UUID)
+
+log:
+	journalctl -f -o cat /usr/bin/gnome-shell | grep --line-buffered control-kill
+
+# Refresh the template after changing a translatable string, then merge it
+# into every translation.
+pot:
+	xgettext --from-code=UTF-8 --language=JavaScript \
+		--package-name=$(DOMAIN) \
+		--msgid-bugs-address=https://github.com/lucaswotta/control-kill/issues \
+		--files-from=po/POTFILES --output=po/$(DOMAIN).pot
+	for lang in $(LINGUAS); do \
+		msgmerge --quiet --update --backup=none po/$$lang.po po/$(DOMAIN).pot || exit 1; \
+	done
+
+lint:
+	npx --no-install eslint .
+
+check: lint
+	glib-compile-schemas --strict --dry-run schemas
+	for po in po/*.po; do msgfmt --check --statistics -o /dev/null $$po || exit 1; done
+	shellcheck install.sh
 
 clean:
-	rm -f $(UUID).shell-extension.zip
+	rm -rf $(BUILD) $(ZIP)
