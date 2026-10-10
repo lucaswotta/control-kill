@@ -11,7 +11,7 @@ import Clutter from 'gi://Clutter';
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import Shell from 'gi://Shell';
-import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
+import {Extension, InjectionManager} from 'resource:///org/gnome/shell/extensions/extension.js';
 import {WindowPreview} from 'resource:///org/gnome/shell/ui/windowPreview.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
@@ -27,12 +27,6 @@ const DEFAULT_COLOR = '#c01c28';
 const POP_SCALE = 1.25;
 const POP_IN_MS = 120;
 const POP_OUT_MS = 220;
-
-/** Every live WindowPreview, so the pop can reach its close button. */
-const previews = new Set();
-
-/** The colour while armed, or null when not armed. */
-let armedColor = null;
 
 function parseHex(hex) {
     const m = /^#?([\da-f]{2})([\da-f]{2})([\da-f]{2})$/i.exec(hex ?? '');
@@ -55,10 +49,6 @@ function styleFor(hex, hovered) {
     return `background-color: rgb(${bg.join(',')}); ` +
            `color: ${lum > 0.6 ? '#000000' : '#ffffff'}; ` +
            `border: 2px solid rgb(${border.join(',')});`;
-}
-
-function applyStyle(button) {
-    button.set_style(armedColor ? styleFor(armedColor, button.hover) : null);
 }
 
 function shellPid() {
@@ -85,7 +75,13 @@ function describe(window) {
     ].join(' ');
 }
 
-function sigkill(pid, why) {
+/**
+ * @param {number} pid
+ * @param {string} why - logged next to the PID
+ * @param {Set<number>} seen - PIDs already signalled by this click; a window
+ *   and its dialogs usually share one process, which only needs one signal
+ */
+function sigkill(pid, why, seen) {
     // Last gate before a signal leaves this extension. Callers check too, but
     // this is the one that cannot be bypassed by a future code path.
     const mine = shellPid();
@@ -93,8 +89,23 @@ function sigkill(pid, why) {
         console.warn(`[control-kill] refused SIGKILL on ${pid} (shell=${mine}, ${why})`);
         return;
     }
+    if (seen.has(pid))
+        return;
+    seen.add(pid);
+
     console.warn(`[control-kill] SIGKILL ${pid} (${why})`);
-    GLib.spawn_command_line_async(`kill -9 ${pid}`);
+    try {
+        const proc = Gio.Subprocess.new(['kill', '-9', `${pid}`], Gio.SubprocessFlags.STDERR_SILENCE);
+        proc.wait_check_async(null, (p, res) => {
+            try {
+                p.wait_check_finish(res);
+            } catch (e) {
+                console.warn(`[control-kill] kill ${pid} failed: ${e.message}`);
+            }
+        });
+    } catch (e) {
+        console.warn(`[control-kill] could not run kill: ${e.message}`);
+    }
 }
 
 /** "org.gnome.Nautilus.desktop" -> "org.gnome.Nautilus" */
@@ -126,7 +137,7 @@ function politeClose(window, reason) {
  * app, so this still works while the app is hung. Async on purpose: a sync
  * D-Bus call here would block the compositor.
  */
-function killViaBus(window, mine) {
+function killViaBus(window, mine, seen) {
     const busName = busNameFor(window);
     if (!busName) {
         politeClose(window, 'app owns no bus name');
@@ -153,7 +164,7 @@ function killViaBus(window, mine) {
             }
 
             if (pid > 1 && pid !== mine)
-                sigkill(pid, `via ${busName}`);
+                sigkill(pid, `via ${busName}`, seen);
             else
                 politeClose(window, `bus returned an unusable PID (${pid})`);
         });
@@ -167,8 +178,12 @@ function killViaBus(window, mine) {
  * the client socket, so when the compositor created the socket it is the
  * compositor's own PID. Calling kill() on such a window ends the session.
  * See the README.
+ *
+ * Do not read _NET_WM_PID either. A sandboxed X11 client (Flatpak, Bottles)
+ * writes the PID it sees inside its own namespace, which names an unrelated
+ * process on the host. get_pid() asks the X server (XRes) instead.
  */
-function killWindow(window) {
+function killWindow(window, seen) {
     const mine = shellPid();
     const direct = window.get_pid();
 
@@ -180,11 +195,11 @@ function killWindow(window) {
     console.warn(`[control-kill] target: ${describe(window)} shell_pid=${mine}`);
 
     if (direct > 1 && direct !== mine) {
-        sigkill(direct, 'window PID');
+        sigkill(direct, 'window PID', seen);
         return;
     }
 
-    killViaBus(window, mine);
+    killViaBus(window, mine, seen);
 }
 
 function popButton(button) {
@@ -215,47 +230,50 @@ function resetButton(button) {
 export default class ControlKillExtension extends Extension {
     enable() {
         this._armed = false;
+        this._armedColor = null;
         this._capturedEventId = 0;
+        this._previews = new Set();
         this._settings = this.getSettings();
+        this._injections = new InjectionManager();
 
-        this._originalInit = WindowPreview.prototype._init;
-        const originalInit = this._originalInit;
-        WindowPreview.prototype._init = function (...args) {
-            const ret = originalInit.apply(this, args);
-            previews.add(this);
-            this.connect('destroy', () => previews.delete(this));
+        const ext = this;
 
-            const button = this._closeButton;
-            // The button only appears on hover, so one that shows up while the
-            // modifier is already held has to be caught here.
-            button?.connect('notify::visible', () => {
-                if (!armedColor || !button.visible)
-                    return;
-                applyStyle(button);
-                popButton(button);
-            });
-            button?.connect('notify::hover', () => applyStyle(button));
+        this._injections.overrideMethod(WindowPreview.prototype, '_init', original => {
+            return function (...args) {
+                const ret = original.apply(this, args);
+                ext._track(this);
+                return ret;
+            };
+        });
 
-            return ret;
-        };
+        // The shell hides the X when the window refuses to close: Wine drops
+        // the close function from a window that has a modal dialog open, and
+        // windows with attached dialogs never get one. Those are exactly the
+        // windows that need a kill, so while armed every preview offers it.
+        this._injections.overrideMethod(WindowPreview.prototype, '_windowCanClose', original => {
+            return function () {
+                return ext._armed || original.call(this);
+            };
+        });
 
         // With the modifier held the X kills; otherwise it behaves as it always
         // did, by calling straight through to the original.
-        this._originalDeleteAll = WindowPreview.prototype._deleteAll;
-        const originalDeleteAll = this._originalDeleteAll;
-        WindowPreview.prototype._deleteAll = function () {
-            const [, , mods] = global.get_pointer();
-            if ((mods & MODIFIER) === 0) {
-                originalDeleteAll.call(this);
-                return;
-            }
+        this._injections.overrideMethod(WindowPreview.prototype, '_deleteAll', original => {
+            return function () {
+                const [, , mods] = global.get_pointer();
+                if ((mods & MODIFIER) === 0) {
+                    original.call(this);
+                    return;
+                }
 
-            const windows = this.window_container.layout_manager.get_windows();
-            for (const window of windows.reverse())
-                killWindow(window);
+                const seen = new Set();
+                const windows = this.window_container.layout_manager.get_windows();
+                for (const window of windows.reverse())
+                    killWindow(window, seen);
 
-            this._closeRequested = true;
-        };
+                this._closeRequested = true;
+            };
+        });
 
         this._overviewIds = [
             Main.overview.connect('showing', () => this._startTracking()),
@@ -272,18 +290,40 @@ export default class ControlKillExtension extends Extension {
             Main.overview.disconnect(id);
         this._overviewIds = null;
 
-        if (this._originalDeleteAll) {
-            WindowPreview.prototype._deleteAll = this._originalDeleteAll;
-            this._originalDeleteAll = null;
-        }
-        if (this._originalInit) {
-            WindowPreview.prototype._init = this._originalInit;
-            this._originalInit = null;
-        }
+        this._injections?.clear();
+        this._injections = null;
 
-        previews.clear();
-        armedColor = null;
+        for (const preview of this._previews ?? [])
+            preview.disconnectObject(this);
+        this._previews = null;
+
+        this._armedColor = null;
         this._settings = null;
+    }
+
+    _track(preview) {
+        this._previews.add(preview);
+        preview.connectObject('destroy', () => this._previews?.delete(preview), this);
+
+        const button = preview._closeButton;
+        if (!button)
+            return;
+
+        // The button only appears on hover, so one that shows up while the
+        // modifier is already held has to be caught here.
+        button.connectObject(
+            'notify::visible', () => {
+                if (!this._armedColor || !button.visible)
+                    return;
+                this._applyStyle(button);
+                popButton(button);
+            },
+            'notify::hover', () => this._applyStyle(button),
+            this);
+    }
+
+    _applyStyle(button) {
+        button.set_style(this._armedColor ? styleFor(this._armedColor, button.hover) : null);
     }
 
     _startTracking() {
@@ -327,15 +367,28 @@ export default class ControlKillExtension extends Extension {
             return;
         this._armed = armed;
 
-        armedColor = armed
+        this._armedColor = armed
             ? this._settings?.get_string('armed-color') ?? DEFAULT_COLOR
             : null;
 
-        for (const preview of previews) {
+        for (const preview of this._previews ?? []) {
             const button = preview._closeButton;
             if (!button)
                 continue;
-            applyStyle(button);
+
+            this._applyStyle(button);
+
+            // A preview already hovered decided on its X before the modifier
+            // went down (or up); bring that decision in line with the new state.
+            if (preview._overlayShown) {
+                if (armed && !button.visible) {
+                    button.opacity = 255;
+                    button.show();
+                } else if (!armed && button.visible && !preview._windowCanClose()) {
+                    button.hide();
+                }
+            }
+
             if (armed && button.visible)
                 popButton(button);
             else
