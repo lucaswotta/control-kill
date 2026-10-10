@@ -1,0 +1,15 @@
+{
+  "name": "control-kill",
+  "private": true,
+  "description": "Development tooling for the Control Kill GNOME Shell extension",
+  "license": "GPL-3.0-or-later",
+  "type": "module",
+  "scripts": {
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "@eslint/js": "9.39.5",
+    "eslint": "9.39.5",
+    "globals": "17.13.0"
+  }
+}

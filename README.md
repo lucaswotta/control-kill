@@ -1,83 +1,123 @@
 <h1 align="center">Control Kill</h1>
 
 <p align="center">
-  Hold <kbd>Ctrl</kbd> in the GNOME overview and every window close button turns
-  red. Click one to kill the app, instead of politely asking it to close.
+  <b>Hold <kbd>Ctrl</kbd> in the GNOME overview. Click the red <code>X</code>. The frozen app is gone.</b>
 </p>
 
 <p align="center">
+  <a href="https://github.com/lucaswotta/control-kill/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/lucaswotta/control-kill/actions/workflows/ci.yml/badge.svg"></a>
+  <a href="https://github.com/lucaswotta/control-kill/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/lucaswotta/control-kill?color=4A86CF"></a>
   <img alt="GNOME Shell 45–48" src="https://img.shields.io/badge/GNOME%20Shell-45%20--%2048-4A86CF">
-  <img alt="License GPL-3.0-or-later" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue">
+  <a href="LICENSE"><img alt="License GPL-3.0-or-later" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
 
 ---
 
-## Why
+An app freezes. You click its `X`. Nothing happens, because the `X` only *asks*
+the app to close and a frozen app never answers. Then you wait for GNOME's
+"not responding" dialog, or open a terminal and hunt for a PID.
 
-The `X` on a window preview sends a close *request*. A frozen app never answers
-it, so the button does nothing and you wait for GNOME's "Force Quit" dialog to
-turn up on its own.
+**Control Kill** gives the `X` in the Activities overview a second mode. Hold
+<kbd>Ctrl</kbd> and every close button turns red: click one and that app is
+killed on the spot. Let go of <kbd>Ctrl</kbd> and everything behaves exactly as
+before. Nothing is taken away.
 
-Control Kill gives that same button a second mode. Nothing is taken away: with
-no modifier held it behaves exactly as it always did.
+## Highlights
+
+- **One gesture, no terminal.** <kbd>Super</kbd>, hold <kbd>Ctrl</kbd>, click.
+- **Works where the `X` disappears.** Wine and Bottles apps with a dialog open,
+  and windows with attached dialogs, normally show no close button at all.
+  While <kbd>Ctrl</kbd> is held, they get one.
+- **Safe on Wayland.** It never trusts a PID that points at GNOME Shell itself,
+  and it never uses the code path that can end your session
+  ([details](#why-not-meta_window_kill)).
+- **Sandbox aware.** Flatpak, Bottles and other sandboxed apps are killed by
+  their real PID on the host, not by the one they report from inside the
+  sandbox.
+- **Yours to style.** Pick any colour; the text and border adapt to stay
+  readable.
+- **Speaks your language:** English, Portuguese (Brazil) and Spanish.
 
 ## Install
 
-One line:
+### One line
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/lucaswotta/control-kill/main/install.sh | bash
 ```
 
-Or by hand, if you would rather read the thing first:
+This downloads the latest release, installs it for your user and leaves it
+enabled. No root needed.
+
+### From source
 
 ```sh
 git clone https://github.com/lucaswotta/control-kill.git
 cd control-kill
-./install.sh
+make install
 ```
 
-Then **log out and back in** — GNOME only scans for new extensions when the
-shell starts, and on Wayland the shell cannot be restarted in place. After that:
+Translations are compiled when `msgfmt` is available (package `gettext`).
 
-```sh
-gnome-extensions enable control-kill@lucaswotta.github.io
-```
+### Then
+
+**Log out and back in.** On Wayland, GNOME Shell only loads new extension code
+when the session starts. On an X11 session, <kbd>Alt</kbd>+<kbd>F2</kbd>, `r`,
+<kbd>Enter</kbd> is enough.
+
+To remove it: `./install.sh --uninstall`, or the same `curl` line followed by
+`| bash -s -- --uninstall`.
 
 ## Usage
 
-1. Open the overview.
+1. Open the overview (<kbd>Super</kbd> or the Activities corner).
 2. Hold <kbd>Ctrl</kbd>. The close buttons turn red and pop.
 3. Click the `X` of the app you want gone.
 
-Release <kbd>Ctrl</kbd> and the buttons go back to normal.
+> [!WARNING]
+> Killing is killing. The app dies without saving, and every window that
+> belongs to the same process goes with it: killing one Chrome window kills
+> Chrome. That is why it sits behind a modifier.
 
-### Choosing the colour
-
-Red is the default. Any colour works:
+### Settings
 
 ```sh
 gnome-extensions prefs control-kill@lucaswotta.github.io
 ```
 
-The text and the border are derived from whatever you pick, so a light colour
-gets dark text and stays readable.
+or open **Extensions** and click the gear next to Control Kill. There you can
+pick the armed colour (red by default).
 
-> [!WARNING]
-> Killing is killing. The process dies without saving, and it takes every window
-> of that process with it — killing one Chrome window kills Chrome. That is why
-> it sits behind a modifier.
+## FAQ
+
+**Does it change anything when I am not holding Ctrl?**
+No. Without the modifier, the `X` calls GNOME's own close code untouched.
+
+**Which process does it kill?**
+The one GNOME says owns the window. For X11 apps the X server answers that,
+which gives the host PID even for sandboxed apps. For Wayland apps, if the PID
+cannot be trusted, it asks the session bus who owns the app's name. If nothing
+gives a trustworthy PID, it falls back to a normal close request instead of
+guessing.
+
+**Does it work with Wine, Bottles, Steam, Flatpak?**
+Yes. Killing a Wine program takes down that program; `wineserver` exits by
+itself shortly after.
+
+**What about apps that are not frozen?**
+They die just the same. Unsaved work is lost.
 
 ## How it works
 
 Arming is tracked from `captured-event` on the stage, and only while the
-overview is open. While armed, each close button gets an inline style built
-from the configured colour — foreground and border are derived from its
-luminance — and a short scale pop.
+overview is open. While armed, each close button gets an inline style built from
+the configured colour and a short scale pop, and every preview offers its `X`,
+including the ones GNOME hides because the window refuses to close.
 
 The kill resolves a PID in three steps:
 
-1. `window.get_pid()`, accepted only when it is not the shell's own PID.
+1. `window.get_pid()`, accepted only when it is not the shell's own PID. For
+   X11 windows mutter asks the X server (XRes), which reports the host PID.
 2. Otherwise the owner of the app's bus name, via an async
    `GetConnectionUnixProcessID`. The bus daemon answers, not the app, so this
    works while the app is hung.
@@ -85,7 +125,8 @@ The kill resolves a PID in three steps:
    the only safe move left.
 
 Every `SIGKILL` passes a final guard that refuses PID ≤ 1 and the shell's own
-PID, whichever path reached it.
+PID, whichever path reached it. A window and its dialogs that share a process
+get one signal, not several.
 
 ### Why not `meta_window_kill()`
 
@@ -95,35 +136,34 @@ comes from `SO_PEERCRED` on the client socket, so when the compositor created
 the socket, the credentials are the compositor's. A Nautilus window reporting
 the shell's own PID turns that call into `kill -9 <gnome-shell>`.
 
-`meta_window_kill()` has exactly one caller in mutter — the **Force Quit**
+`meta_window_kill()` has exactly one caller in mutter: the **Force Quit**
 button of GNOME's unresponsive-app dialog. On an affected window, that button
 ends the session too. This extension resolves the PID itself to stay clear of
 it.
 
-## Development
+### Why not `_NET_WM_PID`
 
-```sh
-make install      # copy files into place and compile the schema
-make enable       # or disable / pack / uninstall
-```
-
-The shell imports `extension.js` once per session and caches the module, so
-editing the source needs a full log out and back in. Set `DRY_RUN = true` at the
-top of `extension.js` to log what would be killed without killing it, and watch
-with:
-
-```sh
-journalctl -f -o cat /usr/bin/gnome-shell | grep control-kill
-```
+A sandboxed X11 client writes the PID it sees inside its own namespace. A Wine
+program under Bottles may report PID 157 while its real PID on the host is
+5776, and PID 157 on the host is some unrelated process. Control Kill never
+reads that property.
 
 ## Compatibility
 
-Written and tested on **GNOME Shell 48** (Debian 13). 45–47 share the same API
-and are listed in `metadata.json`, but are untested.
+Written and tested on **GNOME Shell 48** (Debian 13), with native Wayland apps,
+XWayland apps, Flatpak apps and Wine programs under Bottles. 45 to 47 share the
+same API and are listed in `metadata.json`, but are untested: reports welcome.
 
-The extension patches a private shell method (`_deleteAll`). That is the only
-way to reach the close button, and it means a GNOME release can break it — if
-the `X` stops working after an upgrade, disable this first.
+The extension patches private shell methods of `WindowPreview` (`_deleteAll`,
+`_windowCanClose`). That is the only way to reach the close button, and it
+means a GNOME release can break it. If the `X` misbehaves after an upgrade,
+disable this extension first.
+
+## Contributing
+
+Bug reports, translations and patches are welcome. See
+[CONTRIBUTING.md](CONTRIBUTING.md) for the development setup, how to test
+without logging out, and how to add a language.
 
 ## License
 
