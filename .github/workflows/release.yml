@@ -35,6 +35,7 @@ jobs:
           version="${GITHUB_REF_NAME#v}"
           awk -v v="$version" '
             /^## / { on = index($0, "[" v "]") > 0; next }
+            /^\[[0-9.]+\]: / { next }
             on' CHANGELOG.md > notes.md
           gh release create "$GITHUB_REF_NAME" \
             control-kill@lucaswotta.github.io.shell-extension.zip \
