@@ -55,6 +55,35 @@ async function main() {
     await sleep(200);
     check('the process is gone', Process.pidStartTime(childPid) === null);
     check('signalPid on a gone process is false', !await Process.signalPid(childPid, Process.SIGKILL));
+
+    // A delayed signal must not reach a unit restarted under the same name,
+    // nor a process that took over a PID.
+    const name = `app-gnome-${APP_ID}-${GLib.random_int_range(10000, 99999)}.scope`;
+    const scope = () => spawn(['systemd-run', '--user', '--scope', '--quiet', `--unit=${name}`, 'sleep', '300']);
+
+    scope();
+    await sleep(500);
+    const first = await Process.pinUnit(name);
+    check('pinUnit reads the invocation id', /^[\da-f]{32}$/.test(first?.invocation ?? ''));
+    await Process.signalUnit(name, Process.SIGKILL);
+    await sleep(300);
+
+    scope();
+    await sleep(500);
+    const second = await Process.pinUnit(name);
+    check('a restarted unit gets a new invocation id', second && second.invocation !== first.invocation);
+    check('the old target misses the restarted unit', !await Process.signalTarget(first, Process.SIGKILL));
+    await sleep(300);
+    check('the restarted unit survived', await Process.unitInvocation(name) === second.invocation);
+    check('its own target reaches it', await Process.signalTarget(second, Process.SIGKILL));
+    await sleep(300);
+    check('and then it is gone', await Process.unitInvocation(name) === null);
+
+    const victim = spawn(['sleep', '300']);
+    const pinned = Process.pinPid(parseInt(victim.get_identifier(), 10));
+    victim.force_exit();
+    await sleep(200);
+    check('a PID target misses a dead process', !await Process.signalTarget(pinned, Process.SIGKILL));
 }
 
 const loop = new GLib.MainLoop(null, false);

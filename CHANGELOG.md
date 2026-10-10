@@ -3,6 +3,16 @@
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 versions follow [Semantic Versioning](https://semver.org/).
 
+## [1.0.1] - 2026-10-10
+
+### Fixed
+
+- With "Ask apps to quit first" on, the SIGKILL sent three seconds after
+  SIGTERM could reach a new instance of the app, if it had been reopened in
+  between and systemd gave it the same unit name. Units are now pinned to
+  their invocation id, as processes already were to their start time, and
+  every signal checks it first.
+
 ## [1.0.0] - 2026-10-10
 
 First public release.
@@ -26,4 +36,5 @@ First public release.
 - English, Portuguese (Brazil) and Spanish.
 - GNOME Shell 46 to 51.
 
+[1.0.1]: https://github.com/lucaswotta/control-kill/releases/tag/v1.0.1
 [1.0.0]: https://github.com/lucaswotta/control-kill/releases/tag/v1.0.0
