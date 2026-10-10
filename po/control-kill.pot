@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: control-kill\n"
 "Report-Msgid-Bugs-To: https://github.com/lucaswotta/control-kill/issues\n"
-"POT-Creation-Date: 2026-10-10 19:00-0300\n"
+"POT-Creation-Date: 2026-10-10 19:32-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,111 +17,136 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: extension.js:345
-msgid "Application killed"
+#: extension.js:134
+msgid "Force Quit"
 msgstr ""
 
-#: prefs.js:48
-msgid "General"
+#: extension.js:255
+msgid "Application force quit"
 msgstr ""
 
-#: prefs.js:53
+#: extension.js:258
+#, javascript-format
+msgid "%s was force quit"
+msgstr ""
+
+#: extension.js:286
+msgid "Control Kill is ready"
+msgstr ""
+
+#: extension.js:287
+msgid ""
+"Hold Ctrl in the overview and click a window’s X to force quit it. Running "
+"apps also get Force Quit in their right-click menu."
+msgstr ""
+
+#: prefs.js:76
 msgid "How to use"
 msgstr ""
 
-#: prefs.js:54
+#: prefs.js:77
 msgid ""
-"Open the Activities overview and hold Ctrl. Every close button turns into a "
-"kill button: click one to end that app at once. Release Ctrl and the buttons "
-"go back to normal."
-msgstr ""
-
-#: prefs.js:59
-msgid "Armed colour"
-msgstr ""
-
-#: prefs.js:60
-msgid "The colour the close buttons take while Ctrl is held."
-msgstr ""
-
-#: prefs.js:73
-msgid "Colour"
-msgstr ""
-
-#: prefs.js:74
-msgid "Takes effect the next time you hold Ctrl."
+"Open the Activities overview and hold Ctrl: every close button turns into a "
+"kill button. Click one, or press Ctrl+Delete on a window selected with the "
+"keyboard. Running apps also get Force Quit in their right-click menu."
 msgstr ""
 
 #: prefs.js:80
-msgid "Reset"
+msgid "Behaviour"
 msgstr ""
 
-#: prefs.js:89
-msgid "Default"
+#: prefs.js:81
+msgid "Ask apps to quit first"
 msgstr ""
 
-#: prefs.js:101
+#: prefs.js:82
+msgid "Wait three seconds for the app to exit before forcing it"
+msgstr ""
+
+#: prefs.js:83
+msgid "Show a notification"
+msgstr ""
+
+#: prefs.js:84
+msgid "Name the app after it is force quit"
+msgstr ""
+
+#: prefs.js:90
 msgid "About"
 msgstr ""
 
-#: prefs.js:103
+#: prefs.js:91
 msgid "Version"
 msgstr ""
 
-#: prefs.js:107
+#: prefs.js:92
 msgid "Source code"
 msgstr ""
 
-#: prefs.js:108
+#: prefs.js:93
 msgid "Report a problem"
 msgstr ""
 
-#: prefs.js:116
-msgid "Sound"
+#: prefs.js:107
+msgid "Reset"
 msgstr ""
 
-#: prefs.js:117
-msgid ""
-"Ogg Vorbis (.ogg, .oga) or WAV files. Follows the system setting for alert "
-"sounds."
+#: prefs.js:114
+msgid "Armed colour"
 msgstr ""
 
-#: prefs.js:120
-msgid "Play a sound when killing"
+#: prefs.js:115
+msgid "Close buttons while Ctrl is held"
 msgstr ""
 
-#: prefs.js:124
+#: prefs.js:121
+msgid "Appearance"
+msgstr ""
+
+#: prefs.js:127
+msgid "Play a sound"
+msgstr ""
+
+#: prefs.js:129
 msgid "Sound file"
 msgstr ""
 
-#: prefs.js:142
+#: prefs.js:139
 msgid "Play"
 msgstr ""
 
-#: prefs.js:150
+#: prefs.js:148
 msgid "Choose a file…"
 msgstr ""
 
-#: prefs.js:153
+#: prefs.js:151
 msgid "Use the default sound"
 msgstr ""
 
-#: prefs.js:159
+#: prefs.js:157
 msgid "Default sound"
 msgstr ""
 
-#: prefs.js:161
+#: prefs.js:159
 msgid "File not found, the default sound plays instead"
 msgstr ""
 
-#: prefs.js:178
-msgid "Sound files"
+#: prefs.js:172
+msgid "Sound"
 msgstr ""
 
-#: prefs.js:186
+#: prefs.js:173
+msgid "Follows the system setting for alert sounds."
+msgstr ""
+
+#: prefs.js:181
+msgid "Ogg Vorbis or WAV"
+msgstr ""
+
+#: prefs.js:188
 msgid "Choose a sound"
 msgstr ""
 
-#: prefs.js:218
+#: prefs.js:198
 msgid "Only Ogg Vorbis and WAV files can be played."
 msgstr ""

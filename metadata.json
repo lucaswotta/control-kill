@@ -1,12 +1,14 @@
 {
   "uuid": "control-kill@lucaswotta.github.io",
   "name": "Control Kill",
-  "description": "Hold Ctrl in the Activities overview and every window close button turns red. Click it to kill the app instead of politely asking it to close: the fix for frozen apps that ignore the X, Wine and Flatpak apps included.",
+  "description": "Force quit frozen apps safely. Hold Ctrl in the Activities overview and every close button turns into a kill button; running apps also get Force Quit in their right-click menu. Works with Wine, Flatpak and Wayland apps, and replaces the shell's own Force Quit, which can end the session.",
   "shell-version": [
-    "45",
     "46",
     "47",
-    "48"
+    "48",
+    "49",
+    "50",
+    "51"
   ],
   "url": "https://github.com/lucaswotta/control-kill",
   "version-name": "1.0.0",

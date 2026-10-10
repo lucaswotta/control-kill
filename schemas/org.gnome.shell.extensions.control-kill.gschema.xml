@@ -2,29 +2,35 @@
 <schemalist gettext-domain="control-kill">
   <schema id="org.gnome.shell.extensions.control-kill"
           path="/org/gnome/shell/extensions/control-kill/">
+    <key name="graceful" type="b">
+      <default>false</default>
+      <summary>Ask apps to quit first</summary>
+      <description>Send SIGTERM and wait three seconds before SIGKILL.</description>
+    </key>
+    <key name="notify" type="b">
+      <default>true</default>
+      <summary>Show a notification</summary>
+      <description>Name the app after it is force quit.</description>
+    </key>
     <key name="armed-color" type="s">
       <default>'#c01c28'</default>
       <summary>Armed colour</summary>
-      <description>
-        Colour of the close buttons while the modifier is held, as a #RRGGBB
-        string.
-      </description>
+      <description>Colour of the close buttons while Ctrl is held, as #RRGGBB.</description>
     </key>
     <key name="sound-enabled" type="b">
       <default>false</default>
-      <summary>Play a sound when killing</summary>
-      <description>
-        Play a short sound each time a kill button is clicked. Follows the
-        system setting for alert sounds.
-      </description>
+      <summary>Play a sound</summary>
+      <description>Play a short sound after a force quit.</description>
     </key>
     <key name="sound-file" type="s">
       <default>''</default>
       <summary>Sound file</summary>
-      <description>
-        Absolute path of an Ogg Vorbis or WAV file to play instead of the
-        bundled sound. Empty means the bundled sound.
-      </description>
+      <description>Ogg Vorbis or WAV file to play instead of the bundled one. Empty for the bundled sound.</description>
+    </key>
+    <key name="hint-shown" type="b">
+      <default>false</default>
+      <summary>Hint shown</summary>
+      <description>Whether the first-run hint was shown.</description>
     </key>
   </schema>
 </schemalist>

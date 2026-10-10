@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: control-kill\n"
 "Report-Msgid-Bugs-To: https://github.com/lucaswotta/control-kill/issues\n"
-"POT-Creation-Date: 2026-10-10 19:00-0300\n"
-"PO-Revision-Date: 2026-10-10 19:30-0300\n"
+"POT-Creation-Date: 2026-10-10 19:32-0300\n"
+"PO-Revision-Date: 2026-10-10 21:00-0300\n"
 "Last-Translator: Lucas Motta\n"
 "Language-Team: Portuguese (Brazil)\n"
 "Language: pt_BR\n"
@@ -16,117 +16,142 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: extension.js:345
-msgid "Application killed"
-msgstr "Aplicativo encerrado à força"
+#: extension.js:134
+msgid "Force Quit"
+msgstr "Forçar saída"
 
-#: prefs.js:48
-msgid "General"
-msgstr "Geral"
+#: extension.js:255
+msgid "Application force quit"
+msgstr "Aplicativo forçado a sair"
 
-#: prefs.js:53
+#: extension.js:258
+#, javascript-format
+msgid "%s was force quit"
+msgstr "%s foi forçado a sair"
+
+#: extension.js:286
+msgid "Control Kill is ready"
+msgstr "O Control Kill está pronto"
+
+#: extension.js:287
+msgid ""
+"Hold Ctrl in the overview and click a window’s X to force quit it. Running "
+"apps also get Force Quit in their right-click menu."
+msgstr ""
+"Segure Ctrl na visão geral e clique no X de uma janela para forçar a saída. "
+"Aplicativos abertos também ganham “Forçar saída” no menu do botão direito."
+
+#: prefs.js:76
 msgid "How to use"
 msgstr "Como usar"
 
-#: prefs.js:54
+#: prefs.js:77
 msgid ""
-"Open the Activities overview and hold Ctrl. Every close button turns into a "
-"kill button: click one to end that app at once. Release Ctrl and the buttons "
-"go back to normal."
+"Open the Activities overview and hold Ctrl: every close button turns into a "
+"kill button. Click one, or press Ctrl+Delete on a window selected with the "
+"keyboard. Running apps also get Force Quit in their right-click menu."
 msgstr ""
-"Abra a visão geral de Atividades e segure Ctrl. Todo botão de fechar vira um "
-"botão de encerrar à força: clique em um para finalizar aquele aplicativo na "
-"hora. Solte o Ctrl e os botões voltam ao normal."
-
-#: prefs.js:59
-msgid "Armed colour"
-msgstr "Cor ao segurar Ctrl"
-
-#: prefs.js:60
-msgid "The colour the close buttons take while Ctrl is held."
-msgstr ""
-"A cor que os botões de fechar assumem enquanto o Ctrl está pressionado."
-
-#: prefs.js:73
-msgid "Colour"
-msgstr "Cor"
-
-#: prefs.js:74
-msgid "Takes effect the next time you hold Ctrl."
-msgstr "Vale a partir da próxima vez que você segurar o Ctrl."
+"Abra a visão geral de Atividades e segure Ctrl: todo botão de fechar vira um"
+" botão de forçar saída. Clique em um, ou pressione Ctrl+Delete numa janela "
+"selecionada pelo teclado. Aplicativos abertos também ganham “Forçar saída” "
+"no menu do botão direito."
 
 #: prefs.js:80
-msgid "Reset"
-msgstr "Restaurar"
+msgid "Behaviour"
+msgstr "Comportamento"
 
-#: prefs.js:89
-msgid "Default"
-msgstr "Padrão"
+#: prefs.js:81
+msgid "Ask apps to quit first"
+msgstr "Pedir para sair antes"
 
-#: prefs.js:101
+#: prefs.js:82
+msgid "Wait three seconds for the app to exit before forcing it"
+msgstr "Esperar três segundos o aplicativo sair antes de forçar"
+
+#: prefs.js:83
+msgid "Show a notification"
+msgstr "Mostrar uma notificação"
+
+#: prefs.js:84
+msgid "Name the app after it is force quit"
+msgstr "Informar qual aplicativo foi forçado a sair"
+
+#: prefs.js:90
 msgid "About"
 msgstr "Sobre"
 
-#: prefs.js:103
+#: prefs.js:91
 msgid "Version"
 msgstr "Versão"
 
-#: prefs.js:107
+#: prefs.js:92
 msgid "Source code"
 msgstr "Código-fonte"
 
-#: prefs.js:108
+#: prefs.js:93
 msgid "Report a problem"
 msgstr "Relatar um problema"
 
-#: prefs.js:116
-msgid "Sound"
-msgstr "Som"
+#: prefs.js:107
+msgid "Reset"
+msgstr "Restaurar"
 
-#: prefs.js:117
-msgid ""
-"Ogg Vorbis (.ogg, .oga) or WAV files. Follows the system setting for alert "
-"sounds."
-msgstr ""
-"Arquivos Ogg Vorbis (.ogg, .oga) ou WAV. Segue a configuração de sons de "
-"alerta do sistema."
+#: prefs.js:114
+msgid "Armed colour"
+msgstr "Cor ao segurar Ctrl"
 
-#: prefs.js:120
-msgid "Play a sound when killing"
-msgstr "Tocar um som ao encerrar à força"
+#: prefs.js:115
+msgid "Close buttons while Ctrl is held"
+msgstr "Botões de fechar enquanto o Ctrl está pressionado"
 
-#: prefs.js:124
+#: prefs.js:121
+msgid "Appearance"
+msgstr "Aparência"
+
+#: prefs.js:127
+msgid "Play a sound"
+msgstr "Tocar um som"
+
+#: prefs.js:129
 msgid "Sound file"
 msgstr "Arquivo de som"
 
-#: prefs.js:142
+#: prefs.js:139
 msgid "Play"
 msgstr "Tocar"
 
-#: prefs.js:150
+#: prefs.js:148
 msgid "Choose a file…"
 msgstr "Escolher um arquivo…"
 
-#: prefs.js:153
+#: prefs.js:151
 msgid "Use the default sound"
 msgstr "Usar o som padrão"
 
-#: prefs.js:159
+#: prefs.js:157
 msgid "Default sound"
 msgstr "Som padrão"
 
-#: prefs.js:161
+#: prefs.js:159
 msgid "File not found, the default sound plays instead"
 msgstr "Arquivo não encontrado, o som padrão será tocado"
 
-#: prefs.js:178
-msgid "Sound files"
-msgstr "Arquivos de som"
+#: prefs.js:172
+msgid "Sound"
+msgstr "Som"
 
-#: prefs.js:186
+#: prefs.js:173
+msgid "Follows the system setting for alert sounds."
+msgstr "Segue a configuração de sons de alerta do sistema."
+
+#: prefs.js:181
+msgid "Ogg Vorbis or WAV"
+msgstr "Ogg Vorbis ou WAV"
+
+#: prefs.js:188
 msgid "Choose a sound"
 msgstr "Escolha um som"
 
-#: prefs.js:218
+#: prefs.js:198
 msgid "Only Ogg Vorbis and WAV files can be played."
 msgstr "Só é possível tocar arquivos Ogg Vorbis e WAV."

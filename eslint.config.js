@@ -13,13 +13,12 @@ export default [
             sourceType: 'module',
             globals: {
                 ...globals.es2021,
-                // Provided by GJS and GNOME Shell.
-                global: 'readonly',
-                log: 'readonly',
-                logError: 'readonly',
-                print: 'readonly',
-                printerr: 'readonly',
+                // GJS and GNOME Shell
                 console: 'readonly',
+                global: 'readonly',
+                print: 'readonly',
+                TextDecoder: 'readonly',
+                TextEncoder: 'readonly',
             },
         },
         rules: {
@@ -35,7 +34,7 @@ export default [
         },
     },
     {
-        files: ['eslint.config.js'],
+        files: ['eslint.config.js', 'tests/*.test.js'],
         languageOptions: {globals: globals.node},
     },
 ];
