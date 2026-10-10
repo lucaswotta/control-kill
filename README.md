@@ -9,6 +9,10 @@
   <a href="LICENSE"><img alt="GPL-3.0-or-later" src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue"></a>
 </p>
 
+<p align="center">
+  <img src="assets/demo.gif" width="800" alt="Force quitting VLC from the dash menu, then Firefox by holding Ctrl and clicking its red close button in the overview">
+</p>
+
 ---
 
 The `X` on a window only *asks* an app to close. A frozen app never answers.
@@ -21,6 +25,17 @@ The `X` on a window only *asks* an app to close. A frozen app never answers.
 - **"App is not responding":** the dialog's **Force Quit** button is replaced
   with one that cannot take your session down
   ([why](#gnomes-force-quit-can-end-your-session)).
+
+<table>
+  <tr>
+    <td><img src="assets/overview.png" alt="Overview with Ctrl held: the window's close button is red"></td>
+    <td><img src="assets/app-menu.png" alt="Dash menu of a running app with Force Quit under Quit"></td>
+  </tr>
+  <tr>
+    <td align="center">Hold <kbd>Ctrl</kbd> in the overview</td>
+    <td align="center">Right-click a running app</td>
+  </tr>
+</table>
 
 Windows that normally have no `X` get one while <kbd>Ctrl</kbd> is held: Wine
 programs with a dialog open, windows with attached dialogs. Flatpak, Bottles
