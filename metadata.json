@@ -9,7 +9,7 @@
     "48"
   ],
   "url": "https://github.com/lucaswotta/control-kill",
-  "version-name": "1.1.0",
+  "version-name": "1.0.0",
   "settings-schema": "org.gnome.shell.extensions.control-kill",
   "gettext-domain": "control-kill"
 }

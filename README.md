@@ -36,6 +36,8 @@ before. Nothing is taken away.
   sandbox.
 - **Yours to style.** Pick any colour; the text and border adapt to stay
   readable.
+- **Optional kill sound.** Off by default. Turn it on and keep the bundled
+  4 KB sound, or pick your own.
 - **Speaks your language:** English, Portuguese (Brazil) and Spanish.
 
 ## Install
@@ -85,8 +87,21 @@ To remove it: `./install.sh --uninstall`, or the same `curl` line followed by
 gnome-extensions prefs control-kill@lucaswotta.github.io
 ```
 
-or open **Extensions** and click the gear next to Control Kill. There you can
-pick the armed colour (red by default).
+or open **Extensions** and click the gear next to Control Kill.
+
+| Setting | Default | |
+|---|---|---|
+| Armed colour | red `#c01c28` | Colour of the close buttons while <kbd>Ctrl</kbd> is held. |
+| Play a sound when killing | off | A short sound on every kill. |
+| Sound file | bundled | Any Ogg Vorbis (`.ogg`, `.oga`) or WAV file. |
+
+The sound plays through GNOME's own sound player, so it follows the system
+volume and stays quiet when **Settings → Sound → Alert Sound** is turned off.
+That player only reads Ogg Vorbis and WAV. To use an MP3, convert it first:
+
+```sh
+ffmpeg -i my-sound.mp3 -ac 1 -c:a libvorbis -q:a 4 my-sound.oga
+```
 
 ## FAQ
 
