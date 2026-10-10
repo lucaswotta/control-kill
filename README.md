@@ -183,3 +183,11 @@ without logging out, and how to add a language.
 ## License
 
 GPL-3.0-or-later. See [LICENSE](LICENSE).
+
+### Credits
+
+The kill sound is
+[UI back sound](https://freesound.org/people/KieranKeegan/sounds/418231/) by
+KieranKeegan, released under
+[CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/), trimmed,
+normalized and converted to mono Ogg Vorbis for this extension.
