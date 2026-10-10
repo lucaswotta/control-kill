@@ -1,0 +1,77 @@
+# Spanish translation for Control Kill.
+# Copyright (C) 2026 Lucas Motta
+# This file is distributed under the same license as the control-kill package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: control-kill\n"
+"Report-Msgid-Bugs-To: https://github.com/lucaswotta/control-kill/issues\n"
+"POT-Creation-Date: 2026-10-10 19:00-0300\n"
+"PO-Revision-Date: 2026-10-10 19:00-0300\n"
+"Last-Translator: Lucas Motta\n"
+"Language-Team: Spanish\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: prefs.js:41
+msgid "General"
+msgstr "General"
+
+#: prefs.js:46
+msgid "How to use"
+msgstr "Cómo usar"
+
+#: prefs.js:47
+msgid ""
+"Open the Activities overview and hold Ctrl. Every close button turns into a "
+"kill button: click one to end that app at once. Release Ctrl and the buttons"
+" go back to normal."
+msgstr ""
+"Abre la vista de Actividades y mantén pulsado Ctrl. Cada botón de cerrar se "
+"convierte en un botón para forzar el cierre: haz clic en uno para terminar "
+"esa aplicación al instante. Suelta Ctrl y los botones vuelven a la "
+"normalidad."
+
+#: prefs.js:52
+msgid "Armed colour"
+msgstr "Color al mantener Ctrl"
+
+#: prefs.js:53
+msgid "The colour the close buttons take while Ctrl is held."
+msgstr ""
+"El color que toman los botones de cerrar mientras se mantiene pulsado Ctrl."
+
+#: prefs.js:66
+msgid "Colour"
+msgstr "Color"
+
+#: prefs.js:67
+msgid "Takes effect the next time you hold Ctrl."
+msgstr "Se aplica la próxima vez que mantengas pulsado Ctrl."
+
+#: prefs.js:73
+msgid "Reset"
+msgstr "Restablecer"
+
+#: prefs.js:82
+msgid "Default"
+msgstr "Predeterminado"
+
+#: prefs.js:92
+msgid "About"
+msgstr "Acerca de"
+
+#: prefs.js:94
+msgid "Version"
+msgstr "Versión"
+
+#: prefs.js:98
+msgid "Source code"
+msgstr "Código fuente"
+
+#: prefs.js:99
+msgid "Report a problem"
+msgstr "Informar de un problema"

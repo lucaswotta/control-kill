@@ -1,0 +1,73 @@
+# Control Kill translation template.
+# Copyright (C) 2026 Lucas Motta
+# This file is distributed under the same license as the control-kill package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: control-kill\n"
+"Report-Msgid-Bugs-To: https://github.com/lucaswotta/control-kill/issues\n"
+"POT-Creation-Date: 2026-10-10 19:00-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: prefs.js:41
+msgid "General"
+msgstr ""
+
+#: prefs.js:46
+msgid "How to use"
+msgstr ""
+
+#: prefs.js:47
+msgid ""
+"Open the Activities overview and hold Ctrl. Every close button turns into a "
+"kill button: click one to end that app at once. Release Ctrl and the buttons"
+" go back to normal."
+msgstr ""
+
+#: prefs.js:52
+msgid "Armed colour"
+msgstr ""
+
+#: prefs.js:53
+msgid "The colour the close buttons take while Ctrl is held."
+msgstr ""
+
+#: prefs.js:66
+msgid "Colour"
+msgstr ""
+
+#: prefs.js:67
+msgid "Takes effect the next time you hold Ctrl."
+msgstr ""
+
+#: prefs.js:73
+msgid "Reset"
+msgstr ""
+
+#: prefs.js:82
+msgid "Default"
+msgstr ""
+
+#: prefs.js:92
+msgid "About"
+msgstr ""
+
+#: prefs.js:94
+msgid "Version"
+msgstr ""
+
+#: prefs.js:98
+msgid "Source code"
+msgstr ""
+
+#: prefs.js:99
+msgid "Report a problem"
+msgstr ""

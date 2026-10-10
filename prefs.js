@@ -24,18 +24,33 @@ function rgbaOf(hex) {
     return rgba;
 }
 
+function linkRow(title, url) {
+    const row = new Adw.ActionRow({title, activatable: true});
+    row.add_suffix(new Gtk.Image({icon_name: 'adw-external-link-symbolic'}));
+    row.connect('activated', () => {
+        new Gtk.UriLauncher({uri: url}).launch(row.get_root(), null, null);
+    });
+    return row;
+}
+
 export default class ControlKillPreferences extends ExtensionPreferences {
     fillPreferencesWindow(window) {
         const settings = this.getSettings();
 
         const page = new Adw.PreferencesPage({
-            title: _('Appearance'),
-            icon_name: 'applications-graphics-symbolic',
+            title: _('General'),
+            icon_name: 'preferences-system-symbolic',
         });
+
+        const usage = new Adw.PreferencesGroup({
+            title: _('How to use'),
+            description: _('Open the Activities overview and hold Ctrl. Every close button turns into a kill button: click one to end that app at once. Release Ctrl and the buttons go back to normal.'),
+        });
+        page.add(usage);
 
         const group = new Adw.PreferencesGroup({
             title: _('Armed colour'),
-            description: _('The colour the close buttons take while Control is held.'),
+            description: _('The colour the close buttons take while Ctrl is held.'),
         });
 
         const button = new Gtk.ColorDialogButton({
@@ -49,7 +64,7 @@ export default class ControlKillPreferences extends ExtensionPreferences {
 
         const colorRow = new Adw.ActionRow({
             title: _('Colour'),
-            subtitle: _('Takes effect the next time you hold Control.'),
+            subtitle: _('Takes effect the next time you hold Ctrl.'),
         });
         colorRow.add_suffix(button);
         colorRow.activatable_widget = button;
@@ -73,6 +88,17 @@ export default class ControlKillPreferences extends ExtensionPreferences {
         group.add(colorRow);
         group.add(resetRow);
         page.add(group);
+
+        const about = new Adw.PreferencesGroup({title: _('About')});
+        const version = new Adw.ActionRow({
+            title: _('Version'),
+            subtitle: this.metadata['version-name'] ?? `${this.metadata.version ?? ''}`,
+        });
+        about.add(version);
+        about.add(linkRow(_('Source code'), this.metadata.url));
+        about.add(linkRow(_('Report a problem'), `${this.metadata.url}/issues`));
+        page.add(about);
+
         window.add(page);
     }
 }
