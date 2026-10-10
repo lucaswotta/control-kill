@@ -37,6 +37,11 @@ jobs:
             /^## / { on = index($0, "[" v "]") > 0; next }
             /^\[[0-9.]+\]: / { next }
             on' CHANGELOG.md > notes.md
-          gh release create "$GITHUB_REF_NAME" \
-            control-kill@lucaswotta.github.io.shell-extension.zip \
-            --title "Control Kill $version" --notes-file notes.md
+          zip=control-kill@lucaswotta.github.io.shell-extension.zip
+          # A re-pushed tag refreshes the package instead of failing.
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" "$zip" --clobber
+          else
+            gh release create "$GITHUB_REF_NAME" "$zip" \
+              --title "Control Kill $version" --notes-file notes.md
+          fi
