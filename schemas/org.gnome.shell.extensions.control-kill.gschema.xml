@@ -10,5 +10,21 @@
         string.
       </description>
     </key>
+    <key name="sound-enabled" type="b">
+      <default>false</default>
+      <summary>Play a sound when killing</summary>
+      <description>
+        Play a short sound each time a kill button is clicked. Follows the
+        system setting for alert sounds.
+      </description>
+    </key>
+    <key name="sound-file" type="s">
+      <default>''</default>
+      <summary>Sound file</summary>
+      <description>
+        Absolute path of an Ogg Vorbis or WAV file to play instead of the
+        bundled sound. Empty means the bundled sound.
+      </description>
+    </key>
   </schema>
 </schemalist>

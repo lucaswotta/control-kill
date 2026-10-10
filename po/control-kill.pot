@@ -1,7 +1,8 @@
-# Control Kill translation template.
-# Copyright (C) 2026 Lucas Motta
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the control-kill package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
 #, fuzzy
 msgid ""
 msgstr ""
@@ -15,59 +16,112 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: prefs.js:41
+#: extension.js:345
+msgid "Application killed"
+msgstr ""
+
+#: prefs.js:48
 msgid "General"
 msgstr ""
 
-#: prefs.js:46
+#: prefs.js:53
 msgid "How to use"
 msgstr ""
 
-#: prefs.js:47
+#: prefs.js:54
 msgid ""
 "Open the Activities overview and hold Ctrl. Every close button turns into a "
-"kill button: click one to end that app at once. Release Ctrl and the buttons"
-" go back to normal."
+"kill button: click one to end that app at once. Release Ctrl and the buttons "
+"go back to normal."
 msgstr ""
 
-#: prefs.js:52
+#: prefs.js:59
 msgid "Armed colour"
 msgstr ""
 
-#: prefs.js:53
+#: prefs.js:60
 msgid "The colour the close buttons take while Ctrl is held."
 msgstr ""
 
-#: prefs.js:66
+#: prefs.js:73
 msgid "Colour"
 msgstr ""
 
-#: prefs.js:67
+#: prefs.js:74
 msgid "Takes effect the next time you hold Ctrl."
 msgstr ""
 
-#: prefs.js:73
+#: prefs.js:80
 msgid "Reset"
 msgstr ""
 
-#: prefs.js:82
+#: prefs.js:89
 msgid "Default"
 msgstr ""
 
-#: prefs.js:92
+#: prefs.js:101
 msgid "About"
 msgstr ""
 
-#: prefs.js:94
+#: prefs.js:103
 msgid "Version"
 msgstr ""
 
-#: prefs.js:98
+#: prefs.js:107
 msgid "Source code"
 msgstr ""
 
-#: prefs.js:99
+#: prefs.js:108
 msgid "Report a problem"
+msgstr ""
+
+#: prefs.js:116
+msgid "Sound"
+msgstr ""
+
+#: prefs.js:117
+msgid ""
+"Ogg Vorbis (.ogg, .oga) or WAV files. Follows the system setting for alert "
+"sounds."
+msgstr ""
+
+#: prefs.js:120
+msgid "Play a sound when killing"
+msgstr ""
+
+#: prefs.js:124
+msgid "Sound file"
+msgstr ""
+
+#: prefs.js:142
+msgid "Play"
+msgstr ""
+
+#: prefs.js:150
+msgid "Choose a file…"
+msgstr ""
+
+#: prefs.js:153
+msgid "Use the default sound"
+msgstr ""
+
+#: prefs.js:159
+msgid "Default sound"
+msgstr ""
+
+#: prefs.js:161
+msgid "File not found, the default sound plays instead"
+msgstr ""
+
+#: prefs.js:178
+msgid "Sound files"
+msgstr ""
+
+#: prefs.js:186
+msgid "Choose a sound"
+msgstr ""
+
+#: prefs.js:218
+msgid "Only Ogg Vorbis and WAV files can be played."
 msgstr ""

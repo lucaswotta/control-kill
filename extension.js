@@ -11,7 +11,7 @@ import Clutter from 'gi://Clutter';
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import Shell from 'gi://Shell';
-import {Extension, InjectionManager} from 'resource:///org/gnome/shell/extensions/extension.js';
+import {Extension, InjectionManager, gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
 import {WindowPreview} from 'resource:///org/gnome/shell/ui/windowPreview.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
@@ -23,6 +23,7 @@ const MODIFIER = Clutter.ModifierType.CONTROL_MASK;
 const MODIFIER_KEYS = [Clutter.KEY_Control_L, Clutter.KEY_Control_R];
 
 const DEFAULT_COLOR = '#c01c28';
+const DEFAULT_SOUND = 'sounds/kill.oga';
 
 const POP_SCALE = 1.25;
 const POP_IN_MS = 120;
@@ -271,6 +272,7 @@ export default class ControlKillExtension extends Extension {
                 for (const window of windows.reverse())
                     killWindow(window, seen);
 
+                ext._playSound();
                 this._closeRequested = true;
             };
         });
@@ -320,6 +322,30 @@ export default class ControlKillExtension extends Extension {
             },
             'notify::hover', () => this._applyStyle(button),
             this);
+    }
+
+    /**
+     * Played through mutter's sound player: off the main thread, and silent
+     * when the user turned alert sounds off. libcanberra reads Ogg Vorbis and
+     * WAV only, so a custom file in another format plays nothing.
+     */
+    _playSound() {
+        if (DRY_RUN || !this._settings?.get_boolean('sound-enabled'))
+            return;
+
+        const custom = this._settings.get_string('sound-file');
+        let file = custom ? Gio.File.new_for_path(custom) : null;
+        if (!file?.query_exists(null)) {
+            if (file)
+                console.warn(`[control-kill] sound file not found: ${custom}; using the default`);
+            file = this.dir.resolve_relative_path(DEFAULT_SOUND);
+        }
+
+        try {
+            global.display.get_sound_player().play_from_file(file, _('Application killed'), null);
+        } catch (e) {
+            console.warn(`[control-kill] could not play sound: ${e.message}`);
+        }
     }
 
     _applyStyle(button) {

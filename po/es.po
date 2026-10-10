@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: control-kill\n"
 "Report-Msgid-Bugs-To: https://github.com/lucaswotta/control-kill/issues\n"
 "POT-Creation-Date: 2026-10-10 19:00-0300\n"
-"PO-Revision-Date: 2026-10-10 19:00-0300\n"
+"PO-Revision-Date: 2026-10-10 19:30-0300\n"
 "Last-Translator: Lucas Motta\n"
 "Language-Team: Spanish\n"
 "Language: es\n"
@@ -16,62 +16,118 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: prefs.js:41
+#: extension.js:345
+msgid "Application killed"
+msgstr "Aplicación forzada a cerrar"
+
+#: prefs.js:48
 msgid "General"
 msgstr "General"
 
-#: prefs.js:46
+#: prefs.js:53
 msgid "How to use"
 msgstr "Cómo usar"
 
-#: prefs.js:47
+#: prefs.js:54
 msgid ""
 "Open the Activities overview and hold Ctrl. Every close button turns into a "
-"kill button: click one to end that app at once. Release Ctrl and the buttons"
-" go back to normal."
+"kill button: click one to end that app at once. Release Ctrl and the buttons "
+"go back to normal."
 msgstr ""
 "Abre la vista de Actividades y mantén pulsado Ctrl. Cada botón de cerrar se "
 "convierte en un botón para forzar el cierre: haz clic en uno para terminar "
 "esa aplicación al instante. Suelta Ctrl y los botones vuelven a la "
 "normalidad."
 
-#: prefs.js:52
+#: prefs.js:59
 msgid "Armed colour"
 msgstr "Color al mantener Ctrl"
 
-#: prefs.js:53
+#: prefs.js:60
 msgid "The colour the close buttons take while Ctrl is held."
 msgstr ""
 "El color que toman los botones de cerrar mientras se mantiene pulsado Ctrl."
 
-#: prefs.js:66
+#: prefs.js:73
 msgid "Colour"
 msgstr "Color"
 
-#: prefs.js:67
+#: prefs.js:74
 msgid "Takes effect the next time you hold Ctrl."
 msgstr "Se aplica la próxima vez que mantengas pulsado Ctrl."
 
-#: prefs.js:73
+#: prefs.js:80
 msgid "Reset"
 msgstr "Restablecer"
 
-#: prefs.js:82
+#: prefs.js:89
 msgid "Default"
 msgstr "Predeterminado"
 
-#: prefs.js:92
+#: prefs.js:101
 msgid "About"
 msgstr "Acerca de"
 
-#: prefs.js:94
+#: prefs.js:103
 msgid "Version"
 msgstr "Versión"
 
-#: prefs.js:98
+#: prefs.js:107
 msgid "Source code"
 msgstr "Código fuente"
 
-#: prefs.js:99
+#: prefs.js:108
 msgid "Report a problem"
 msgstr "Informar de un problema"
+
+#: prefs.js:116
+msgid "Sound"
+msgstr "Sonido"
+
+#: prefs.js:117
+msgid ""
+"Ogg Vorbis (.ogg, .oga) or WAV files. Follows the system setting for alert "
+"sounds."
+msgstr ""
+"Archivos Ogg Vorbis (.ogg, .oga) o WAV. Sigue la configuración de sonidos de "
+"alerta del sistema."
+
+#: prefs.js:120
+msgid "Play a sound when killing"
+msgstr "Reproducir un sonido al forzar el cierre"
+
+#: prefs.js:124
+msgid "Sound file"
+msgstr "Archivo de sonido"
+
+#: prefs.js:142
+msgid "Play"
+msgstr "Reproducir"
+
+#: prefs.js:150
+msgid "Choose a file…"
+msgstr "Elegir un archivo…"
+
+#: prefs.js:153
+msgid "Use the default sound"
+msgstr "Usar el sonido predeterminado"
+
+#: prefs.js:159
+msgid "Default sound"
+msgstr "Sonido predeterminado"
+
+#: prefs.js:161
+msgid "File not found, the default sound plays instead"
+msgstr "Archivo no encontrado, se reproducirá el sonido predeterminado"
+
+#: prefs.js:178
+msgid "Sound files"
+msgstr "Archivos de sonido"
+
+#: prefs.js:186
+msgid "Choose a sound"
+msgstr "Elige un sonido"
+
+#: prefs.js:218
+msgid "Only Ogg Vorbis and WAV files can be played."
+msgstr "Solo se pueden reproducir archivos Ogg Vorbis y WAV."
