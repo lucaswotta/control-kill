@@ -32,6 +32,7 @@ make test-integration   # lib/process.js against the real systemd and bus
 make test-shell         # the installed extension in a headless GNOME Shell
 make install
 make zip                # package for extensions.gnome.org
+make shexli             # the checker extensions.gnome.org runs on uploads
 ```
 
 `make test-shell` starts a private headless GNOME Shell with its own session

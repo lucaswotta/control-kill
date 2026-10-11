@@ -8,7 +8,7 @@ LINGUAS = $(shell cat po/LINGUAS)
 BUILD   = build
 ZIP     = $(UUID).shell-extension.zip
 
-.PHONY: all zip install uninstall enable disable prefs log pot lint test test-integration test-shell check clean
+.PHONY: all zip install uninstall enable disable prefs log pot lint test test-integration test-shell shexli check clean
 
 all: zip
 
@@ -79,6 +79,13 @@ test-shell: install
 	status=$$?; \
 	grep -E '^(ok|FAIL)|passed|FAILED|JS ERROR|\[control-kill\]' $$log; \
 	rm -f $$log; exit $$status
+
+# The static checker extensions.gnome.org runs on uploads. shexli 0.2.1
+# crashes with tree-sitter 0.26, hence the pin. EGO-M-004 flags GNOME 51 as
+# implausible; reviewers accept it (Blur my Shell, 46-51, approved 2026-10-06).
+shexli: zip
+	uvx -q --python 3.13 --with 'tree-sitter==0.25.0' --with 'tree-sitter-javascript==0.25.0' \
+		shexli==0.2.1 $(ZIP)
 
 check: lint test
 	glib-compile-schemas --strict --dry-run schemas
