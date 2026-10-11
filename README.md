@@ -1,3 +1,5 @@
+<p align="center"><img src="assets/icon.svg" width="112" alt=""></p>
+
 <h1 align="center">Control Kill</h1>
 
 <p align="center"><b>Force quit frozen apps in GNOME. Safely.</b></p>
