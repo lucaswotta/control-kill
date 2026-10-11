@@ -80,10 +80,8 @@ export default class ControlKillExtension extends Extension {
 
         for (const preview of this._previews)
             this._untrack(preview);
-        for (const [item, menu] of this._menuItems) {
-            delete menu._forceQuitItem;
+        for (const item of this._menuItems.values())
             item.destroy();
-        }
 
         this._injections.clear();
         cancelPending();
@@ -126,20 +124,24 @@ export default class ControlKillExtension extends Extension {
     _patchAppMenu() {
         const ext = this;
 
-        // Called whenever the menu's app or its state changes.
+        // Called whenever the menu's app or its state changes. The items live
+        // in ext._menuItems (menu -> item) and are destroyed in disable().
         this._injections.overrideMethod(AppMenu.prototype, '_updateQuitItem', original => function () {
             original.call(this);
-
-            if (!this._forceQuitItem) {
-                const item = new PopupMenu.PopupMenuItem(_('Force Quit'));
-                item.connect('activate', () => ext._forceQuit(this._app.get_windows()));
-                item.connect('destroy', () => ext._menuItems?.delete(item));
-                this.addMenuItem(item, this._getMenuItems().indexOf(this._quitItem) + 1);
-                this._forceQuitItem = item;
-                ext._menuItems.set(item, this);
-            }
-            this._forceQuitItem.visible = this._quitItem.visible;
+            ext._forceQuitItem(this).visible = this._quitItem.visible;
         });
+    }
+
+    _forceQuitItem(menu) {
+        let item = this._menuItems.get(menu);
+        if (!item) {
+            item = new PopupMenu.PopupMenuItem(_('Force Quit'));
+            item.connect('activate', () => this._forceQuit(menu._app.get_windows()));
+            item.connect('destroy', () => this._menuItems?.delete(menu));
+            menu.addMenuItem(item, menu._getMenuItems().indexOf(menu._quitItem) + 1);
+            this._menuItems.set(menu, item);
+        }
+        return item;
     }
 
     _patchCloseDialog() {
@@ -252,17 +254,26 @@ export default class ControlKillExtension extends Extension {
             return;
 
         if (this._settings.get_boolean('sound-enabled'))
-            this._play(this._killSound(), _('Application force quit'));
+            this._play(await this._killSound(), _('Application force quit'));
         if (this._settings.get_boolean('notify')) {
             for (const name of names)
                 Main.notify(_('%s was force quit').format(name));
         }
     }
 
-    _killSound() {
+    async _killSound() {
         const custom = this._settings.get_string('sound-file');
-        const file = custom ? Gio.File.new_for_path(custom) : null;
-        return file?.query_exists(null) ? file : this.dir.resolve_relative_path(KILL_SOUND);
+        if (custom) {
+            const file = Gio.File.new_for_path(custom);
+            try {
+                await file.query_info_async('standard::type', Gio.FileQueryInfoFlags.NONE,
+                    GLib.PRIORITY_DEFAULT, null);
+                return file;
+            } catch {
+                // missing: the bundled sound plays instead
+            }
+        }
+        return this.dir.resolve_relative_path(KILL_SOUND);
     }
 
     _wakeAudio() {

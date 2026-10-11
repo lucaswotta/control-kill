@@ -37,9 +37,10 @@ async function main() {
     const [, cgroup] = GLib.spawn_command_line_sync(`systemctl --user show -P ControlGroup ${unit}`);
     const procs = `/sys/fs/cgroup${new TextDecoder().decode(cgroup).trim()}/cgroup.procs`;
     const pid = parseInt(new TextDecoder().decode(GLib.file_get_contents(procs)[1]), 10);
-    check('pidUnit maps the process to its scope', Process.pidUnit(pid) === unit);
-    check('pidStartTime reads the process', Process.pidStartTime(pid) !== null);
-    check('the shell is not an app', Process.pidUnit(Process.ownPid()) !== unit);
+    check('pidUnit maps the process to its scope', await Process.pidUnit(pid) === unit);
+    check('pidStartTime reads the process', await Process.pidStartTime(pid) !== null);
+    check('ownPid is this process', Process.ownPid() === parseInt(GLib.file_read_link('/proc/self'), 10));
+    check('this process is not the app', await Process.pidUnit(Process.ownPid()) !== unit);
 
     check('busNamePid resolves the bus daemon', await Process.busNamePid('org.freedesktop.DBus') > 0);
     check('busNamePid of a missing name is 0', await Process.busNamePid('org.controlkill.Missing') === 0);
@@ -53,7 +54,7 @@ async function main() {
     const childPid = parseInt(child.get_identifier(), 10);
     check('signalPid SIGTERM', await Process.signalPid(childPid, Process.SIGTERM));
     await sleep(200);
-    check('the process is gone', Process.pidStartTime(childPid) === null);
+    check('the process is gone', await Process.pidStartTime(childPid) === null);
     check('signalPid on a gone process is false', !await Process.signalPid(childPid, Process.SIGKILL));
 
     // A delayed signal must not reach a unit restarted under the same name,
@@ -80,7 +81,7 @@ async function main() {
     check('and then it is gone', await Process.unitInvocation(name) === null);
 
     const victim = spawn(['sleep', '300']);
-    const pinned = Process.pinPid(parseInt(victim.get_identifier(), 10));
+    const pinned = await Process.pinPid(parseInt(victim.get_identifier(), 10));
     victim.force_exit();
     await sleep(200);
     check('a PID target misses a dead process', !await Process.signalTarget(pinned, Process.SIGKILL));

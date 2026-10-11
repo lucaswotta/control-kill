@@ -22,6 +22,7 @@ const UUID = 'control-kill@lucaswotta.github.io';
 const HELPER = 'org.gnome.Shell.PerfHelper';
 
 const failures = [];
+let forceQuitLabel = null;
 
 function check(what, ok) {
     print(`${ok ? 'ok  ' : 'FAIL'} ${what}`);
@@ -172,6 +173,21 @@ async function testGraceful(ext) {
     ext._settings.reset('graceful');
 }
 
+async function testSoundFile(ext) {
+    const bundled = ext.dir.resolve_relative_path('sounds/kill.oga').get_path();
+
+    ext._settings.set_string('sound-file', '/nonexistent/control-kill.oga');
+    check('sound: a missing custom file falls back to the bundled one',
+        (await ext._killSound()).get_path() === bundled);
+
+    const custom = ext.dir.resolve_relative_path('sounds/wake.wav').get_path();
+    ext._settings.set_string('sound-file', custom);
+    check('sound: an existing custom file is used', (await ext._killSound()).get_path() === custom);
+
+    ext._settings.reset('sound-file');
+    check('sound: no custom file plays the bundled one', (await ext._killSound()).get_path() === bundled);
+}
+
 async function testPlainClose() {
     const window = await testWindow();
     const pid = window.get_pid();
@@ -184,7 +200,7 @@ async function testPlainClose() {
     await overview(false);
 }
 
-async function testAppMenu() {
+async function testAppMenu(ext) {
     const window = await testWindow();
     const pid = window.get_pid();
     const app = Shell.WindowTracker.get_default().get_window_app(window);
@@ -192,7 +208,8 @@ async function testAppMenu() {
     const menu = new AppMenu(Main.panel, St.Side.TOP);
     menu.setApp(app);
     const items = menu._getMenuItems();
-    const item = menu._forceQuitItem;
+    const item = ext._menuItems.get(menu);
+    forceQuitLabel = item?.label.text;
     check('app menu: Force Quit added', item);
     check('app menu: right after Quit', items.indexOf(item) === items.indexOf(menu._quitItem) + 1);
     check('app menu: visible for a running app', item?.visible);
@@ -213,13 +230,16 @@ async function testCloseDialog() {
     check('close dialog: the shell is still here', pidAlive(Number(GLib.file_read_link('/proc/self'))));
 }
 
-function testDisable() {
+function testDisable(ext) {
     const patched = [
         WindowPreview.prototype._deleteAll,
         AppMenu.prototype._updateQuitItem,
         CloseDialog.prototype._onClose,
     ];
+    const items = [...ext._menuItems.values()];
     Main.extensionManager.disableExtension(UUID);
+    check('disable: menu items destroyed and released',
+        ext._menuItems === null && items.every(i => !i.get_parent()));
 
     check('disable: shell methods restored', [
         WindowPreview.prototype._deleteAll,
@@ -229,7 +249,8 @@ function testDisable() {
 
     const menu = new AppMenu(Main.panel, St.Side.TOP);
     menu.setApp(Shell.AppSystem.get_default().get_running()[0] ?? null);
-    check('disable: no Force Quit item afterwards', !menu._forceQuitItem);
+    check('disable: no Force Quit item afterwards',
+        forceQuitLabel && !menu._getMenuItems().some(i => i.label?.text === forceQuitLabel));
     menu.destroy();
 }
 
@@ -246,10 +267,11 @@ async function main() {
     await testOverview(ext);
     await testKeyboard(ext);
     await testGraceful(ext);
+    await testSoundFile(ext);
     await testPlainClose();
-    await testAppMenu();
+    await testAppMenu(ext);
     await testCloseDialog();
-    testDisable();
+    testDisable(ext);
 }
 
 let started = false;

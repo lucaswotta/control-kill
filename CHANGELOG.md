@@ -3,6 +3,17 @@
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 versions follow [Semantic Versioning](https://semver.org/).
 
+## [1.0.2] - 2026-10-10
+
+### Changed
+
+- No synchronous file IO in the shell process: /proc is read asynchronously
+  and the shell's own PID comes from GCredentials.
+- Nothing is patched at module load: the GIO calls are wrapped locally
+  instead of promisifying GIO prototypes.
+- Force Quit menu items are owned by the extension and destroyed and
+  released in disable().
+
 ## [1.0.1] - 2026-10-10
 
 ### Fixed
@@ -36,5 +47,6 @@ First public release.
 - English, Portuguese (Brazil) and Spanish.
 - GNOME Shell 46 to 51.
 
+[1.0.2]: https://github.com/lucaswotta/control-kill/releases/tag/v1.0.2
 [1.0.1]: https://github.com/lucaswotta/control-kill/releases/tag/v1.0.1
 [1.0.0]: https://github.com/lucaswotta/control-kill/releases/tag/v1.0.0
