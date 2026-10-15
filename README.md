@@ -113,8 +113,8 @@ upgrade, disable it first.
 ## Contributing
 
 Bugs, translations and patches are welcome: see
-[CONTRIBUTING.md](CONTRIBUTING.md). Available in English, Portuguese (Brazil)
-and Spanish.
+[CONTRIBUTING.md](CONTRIBUTING.md). Available in English, Portuguese (Brazil),
+Russian and Spanish.
 
 ## License
 
