@@ -1,0 +1,169 @@
+# Russian translation for Control Kill.
+# Copyright (C) 2026 Lucas Motta
+# This file is distributed under the same license as the control-kill package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: control-kill
+"
+"Report-Msgid-Bugs-To: https://github.com/lucaswotta/control-kill/issues
+"
+"POT-Creation-Date: 2026-10-10 19:32-0300
+"
+"PO-Revision-Date: 2026-10-15 21:30+0000
+"
+"Last-Translator: mrvi0
+"
+"Language-Team: Russian
+"
+"Language: ru
+"
+"MIME-Version: 1.0
+"
+"Content-Type: text/plain; charset=UTF-8
+"
+"Content-Transfer-Encoding: 8bit
+"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
+"
+
+#: extension.js:134
+msgid "Force Quit"
+msgstr "Завершить принудительно"
+
+#: extension.js:255
+msgid "Application force quit"
+msgstr "Приложение завершено принудительно"
+
+#: extension.js:258
+#, javascript-format
+msgid "%s was force quit"
+msgstr "%s завершено принудительно"
+
+#: extension.js:286
+msgid "Control Kill is ready"
+msgstr "Control Kill готов к работе"
+
+#: extension.js:287
+msgid ""
+"Hold Ctrl in the overview and click a window’s X to force quit it. Running "
+"apps also get Force Quit in their right-click menu."
+msgstr ""
+"Удерживайте Ctrl в обзоре и нажмите крестик окна, чтобы завершить его "
+"принудительно. У запущенных приложений в контекстном меню тоже есть пункт "
+"«Завершить принудительно»."
+
+#: prefs.js:76
+msgid "How to use"
+msgstr "Как пользоваться"
+
+#: prefs.js:77
+msgid ""
+"Open the Activities overview and hold Ctrl: every close button turns into a "
+"kill button. Click one, or press Ctrl+Delete on a window selected with the "
+"keyboard. Running apps also get Force Quit in their right-click menu."
+msgstr ""
+"Откройте обзор «Активность» и удерживайте Ctrl: каждая кнопка закрытия "
+"становится кнопкой принудительного завершения. Нажмите её или Ctrl+Delete "
+"на окне, выбранном с клавиатуры. У запущенных приложений в контекстном меню "
+"тоже есть пункт «Завершить принудительно»."
+
+#: prefs.js:80
+msgid "Behaviour"
+msgstr "Поведение"
+
+#: prefs.js:81
+msgid "Ask apps to quit first"
+msgstr "Сначала предложить приложению выйти"
+
+#: prefs.js:82
+msgid "Wait three seconds for the app to exit before forcing it"
+msgstr "Подождать три секунды, прежде чем завершать принудительно"
+
+#: prefs.js:83
+msgid "Show a notification"
+msgstr "Показывать уведомление"
+
+#: prefs.js:84
+msgid "Name the app after it is force quit"
+msgstr "Называть приложение после принудительного завершения"
+
+#: prefs.js:90
+msgid "About"
+msgstr "О программе"
+
+#: prefs.js:91
+msgid "Version"
+msgstr "Версия"
+
+#: prefs.js:92
+msgid "Source code"
+msgstr "Исходный код"
+
+#: prefs.js:93
+msgid "Report a problem"
+msgstr "Сообщить о проблеме"
+
+#: prefs.js:107
+msgid "Reset"
+msgstr "Сбросить"
+
+#: prefs.js:114
+msgid "Armed colour"
+msgstr "Цвет в режиме Ctrl"
+
+#: prefs.js:115
+msgid "Close buttons while Ctrl is held"
+msgstr "Кнопки закрытия при удержании Ctrl"
+
+#: prefs.js:121
+msgid "Appearance"
+msgstr "Внешний вид"
+
+#: prefs.js:127
+msgid "Play a sound"
+msgstr "Воспроизводить звук"
+
+#: prefs.js:129
+msgid "Sound file"
+msgstr "Звуковой файл"
+
+#: prefs.js:139
+msgid "Play"
+msgstr "Воспроизвести"
+
+#: prefs.js:148
+msgid "Choose a file…"
+msgstr "Выбрать файл…"
+
+#: prefs.js:151
+msgid "Use the default sound"
+msgstr "Использовать звук по умолчанию"
+
+#: prefs.js:157
+msgid "Default sound"
+msgstr "Звук по умолчанию"
+
+#: prefs.js:159
+msgid "File not found, the default sound plays instead"
+msgstr "Файл не найден, воспроизводится звук по умолчанию"
+
+#: prefs.js:172
+msgid "Sound"
+msgstr "Звук"
+
+#: prefs.js:173
+msgid "Follows the system setting for alert sounds."
+msgstr "Следует системной настройке звуков оповещения."
+
+#: prefs.js:181
+msgid "Ogg Vorbis or WAV"
+msgstr "Ogg Vorbis или WAV"
+
+#: prefs.js:188
+msgid "Choose a sound"
+msgstr "Выбрать звук"
+
+#: prefs.js:198
+msgid "Only Ogg Vorbis and WAV files can be played."
+msgstr "Можно воспроизводить только файлы Ogg Vorbis и WAV."
