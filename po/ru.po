@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: control-kill\n"
 "Report-Msgid-Bugs-To: https://github.com/lucaswotta/control-kill/issues\n"
 "POT-Creation-Date: 2026-10-10 19:32-0300\n"
-"PO-Revision-Date: 2026-10-15 21:35+0000\n"
+"PO-Revision-Date: 2026-10-15 22:30+0000\n"
 "Last-Translator: mrvi0\n"
 "Language-Team: Russian\n"
 "Language: ru\n"
@@ -18,7 +18,7 @@ msgstr ""
 
 #: extension.js:134
 msgid "Force Quit"
-msgstr "Завершить принудительно"
+msgstr "Принудительно завершить"
 
 #: extension.js:255
 msgid "Application force quit"
@@ -27,7 +27,7 @@ msgstr "Приложение завершено принудительно"
 #: extension.js:258
 #, javascript-format
 msgid "%s was force quit"
-msgstr "%s завершено принудительно"
+msgstr "Приложение «%s» завершено принудительно"
 
 #: extension.js:286
 msgid "Control Kill is ready"
@@ -40,7 +40,7 @@ msgid ""
 msgstr ""
 "Удерживайте Ctrl в обзоре и нажмите крестик окна, чтобы завершить его "
 "принудительно. У запущенных приложений в контекстном меню тоже есть "
-"пункт «Завершить принудительно»."
+"пункт «Принудительно завершить»."
 
 #: prefs.js:76
 msgid "How to use"
@@ -52,11 +52,10 @@ msgid ""
 "kill button. Click one, or press Ctrl+Delete on a window selected with the "
 "keyboard. Running apps also get Force Quit in their right-click menu."
 msgstr ""
-"Откройте обзор «Активность» и удерживайте Ctrl: каждая кнопка "
-"закрытия становится кнопкой принудительного завершения. Нажмите её "
-"или Ctrl+Delete на окне, выбранном с клавиатуры. У запущенных "
-"приложений в контекстном меню тоже есть пункт «Завершить "
-"принудительно»."
+"Откройте «Обзор» и удерживайте Ctrl: каждая кнопка закрытия "
+"становится кнопкой принудительного завершения. Нажмите её или "
+"Ctrl+Delete на окне, выбранном с клавиатуры. У запущенных приложений "
+"в контекстном меню тоже есть пункт «Принудительно завершить»."
 
 #: prefs.js:80
 msgid "Behaviour"
