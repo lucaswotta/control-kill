@@ -11,7 +11,7 @@
     "51"
   ],
   "url": "https://github.com/lucaswotta/control-kill",
-  "version-name": "1.0.2",
+  "version-name": "1.0.3",
   "settings-schema": "org.gnome.shell.extensions.control-kill",
   "gettext-domain": "control-kill"
 }
