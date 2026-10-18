@@ -10,6 +10,11 @@ versions follow [Semantic Versioning](https://semver.org/).
 - Notifications now come from their own "Control Kill" source, with the
   extension's icon, instead of the shell's generic "System" source (#1).
 
+### Added
+
+- CI runs the headless shell test on GNOME Shell 46 to 51, one container per
+  release (#3).
+
 ## [1.0.3] - 2026-10-15
 
 ### Added

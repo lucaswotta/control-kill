@@ -37,6 +37,9 @@ function sleep(ms) {
     }));
 }
 
+// ExtensionState.ACTIVE in the shell's extensionUtils.
+const EXTENSION_ACTIVE = 1;
+
 async function waitFor(condition, ms = 8000) {
     for (let waited = 0; waited < ms; waited += 50) {
         const value = condition();
@@ -234,7 +237,7 @@ async function testCloseDialog() {
     check('close dialog: the shell is still here', pidAlive(Number(GLib.file_read_link('/proc/self'))));
 }
 
-function testDisable(ext) {
+async function testDisable(ext) {
     const patched = [
         WindowPreview.prototype._deleteAll,
         AppMenu.prototype._updateQuitItem,
@@ -243,6 +246,8 @@ function testDisable(ext) {
     const items = [...ext._menuItems.values()];
     const source = ext._source;
     Main.extensionManager.disableExtension(UUID);
+    // Shell 51 disables asynchronously; older releases are done on return.
+    await waitFor(() => Main.extensionManager.lookup(UUID)?.state !== EXTENSION_ACTIVE);
     check('disable: menu items destroyed and released',
         ext._menuItems === null && items.every(i => !i.get_parent()));
 
@@ -279,7 +284,7 @@ async function main() {
     await testPlainClose();
     await testAppMenu(ext);
     await testCloseDialog();
-    testDisable(ext);
+    await testDisable(ext);
 }
 
 let started = false;

@@ -45,3 +45,26 @@ jobs:
         with:
           name: control-kill-extension
           path: control-kill@lucaswotta.github.io.shell-extension.zip
+
+  shell:
+    name: shell ${{ matrix.shell }}
+    runs-on: ubuntu-24.04
+    container:
+      image: ${{ matrix.image }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { shell: '46', image: 'ubuntu:24.04' }
+          - { shell: '47', image: 'fedora:41' }
+          - { shell: '48', image: 'fedora:42' }
+          - { shell: '49', image: 'fedora:43' }
+          - { shell: '50', image: 'fedora:44' }
+          - { shell: '51', image: 'fedora:rawhide' }
+    steps:
+      # Bare images have no git or tar worth the name; checkout falls back to
+      # the REST API without them, which is enough here.
+      - uses: actions/checkout@v5
+
+      - name: Headless GNOME Shell test
+        run: tests/container.sh

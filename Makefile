@@ -92,7 +92,7 @@ shexli: zip
 check: lint test
 	glib-compile-schemas --strict --dry-run schemas
 	for po in po/*.po; do msgfmt --check --statistics -o /dev/null $$po || exit 1; done
-	shellcheck install.sh
+	shellcheck install.sh tests/container.sh
 
 clean:
 	rm -rf $(BUILD) $(ZIP)
