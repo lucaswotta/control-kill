@@ -3,6 +3,7 @@ DOMAIN  = control-kill
 SOURCES = extension.js prefs.js metadata.json LICENSE
 LIB     = $(wildcard lib/*.js)
 SOUNDS  = $(wildcard sounds/*.oga sounds/*.wav)
+ICONS   = $(wildcard icons/*.svg)
 SCHEMA  = schemas/org.gnome.shell.extensions.control-kill.gschema.xml
 LINGUAS = $(shell cat po/LINGUAS)
 BUILD   = build
@@ -16,13 +17,14 @@ all: zip
 # No compiled schema inside: since GNOME 44 the shell compiles it on install.
 zip: $(ZIP)
 
-$(ZIP): $(SOURCES) $(LIB) $(SOUNDS) $(SCHEMA) $(wildcard po/*.po) po/LINGUAS
+$(ZIP): $(SOURCES) $(LIB) $(SOUNDS) $(ICONS) $(SCHEMA) $(wildcard po/*.po) po/LINGUAS
 	rm -rf $(BUILD) $(ZIP)
-	mkdir -p $(BUILD)/lib $(BUILD)/schemas $(BUILD)/sounds
+	mkdir -p $(BUILD)/lib $(BUILD)/schemas $(BUILD)/sounds $(BUILD)/icons
 	cp $(SOURCES) $(BUILD)/
 	cp $(LIB) $(BUILD)/lib/
 	cp $(SCHEMA) $(BUILD)/schemas/
 	cp $(SOUNDS) $(BUILD)/sounds/
+	cp $(ICONS) $(BUILD)/icons/
 	for lang in $(LINGUAS); do \
 		mkdir -p $(BUILD)/locale/$$lang/LC_MESSAGES && \
 		msgfmt --check -o $(BUILD)/locale/$$lang/LC_MESSAGES/$(DOMAIN).mo po/$$lang.po || exit 1; \

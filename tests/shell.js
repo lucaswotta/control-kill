@@ -135,8 +135,12 @@ async function testOverview(ext) {
     ext._setArmed(true);
     button.emit('clicked', 1);
     check('overview: armed X kills the process', await killed(window, pid));
-    check('overview: notification names the app',
-        await waitFor(() => Main.messageTray.getSources().some(s => s.notifications.length > 0)));
+    const source = await waitFor(() => Main.messageTray.getSources()
+        .find(s => s.title === 'Control Kill' && s.notifications.length > 0));
+    check('overview: notification comes from the Control Kill source', !!source);
+    check('overview: notification names the app', !!source && source.notifications.some(n => n.title.length > 0));
+    check('overview: the source carries the extension icon',
+        source?.icon instanceof Gio.FileIcon && source.icon.get_file().get_basename() === 'control-kill-symbolic.svg');
 
     await overview(false);
     check('overview: closing the overview disarms', !ext._armed);
@@ -237,9 +241,13 @@ function testDisable(ext) {
         CloseDialog.prototype._onClose,
     ];
     const items = [...ext._menuItems.values()];
+    const source = ext._source;
     Main.extensionManager.disableExtension(UUID);
     check('disable: menu items destroyed and released',
         ext._menuItems === null && items.every(i => !i.get_parent()));
+
+    check('disable: the notification source is gone',
+        ext._source === null && !(source && Main.messageTray.getSources().includes(source)));
 
     check('disable: shell methods restored', [
         WindowPreview.prototype._deleteAll,

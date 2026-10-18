@@ -10,6 +10,7 @@ import {Extension, InjectionManager, gettext as _} from 'resource:///org/gnome/s
 import {AppMenu} from 'resource:///org/gnome/shell/ui/appMenu.js';
 import {CloseDialog} from 'resource:///org/gnome/shell/ui/closeDialog.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import * as MessageTray from 'resource:///org/gnome/shell/ui/messageTray.js';
 import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 import {WindowPreview} from 'resource:///org/gnome/shell/ui/windowPreview.js';
 
@@ -20,6 +21,7 @@ const MODIFIER = Clutter.ModifierType.CONTROL_MASK;
 const MODIFIER_KEYS = [Clutter.KEY_Control_L, Clutter.KEY_Control_R];
 
 const KILL_SOUND = 'sounds/kill.oga';
+const ICON = 'icons/control-kill-symbolic.svg';
 
 // Idle audio outputs are suspended, and a Bluetooth one takes longer to wake
 // than the kill sound lasts. A tenth of a second of silence, played as soon as
@@ -59,6 +61,7 @@ export default class ControlKillExtension extends Extension {
         this._color = null;
         this._eventId = 0;
         this._lastWake = 0;
+        this._source = null;
         this._previews = new Set();
         this._menuItems = new Map();
 
@@ -85,7 +88,9 @@ export default class ControlKillExtension extends Extension {
 
         this._injections.clear();
         cancelPending();
+        this._source?.destroy();
 
+        this._source = null;
         this._settings = null;
         this._injections = null;
         this._previews = null;
@@ -257,7 +262,7 @@ export default class ControlKillExtension extends Extension {
             this._play(await this._killSound(), _('Application force quit'));
         if (this._settings.get_boolean('notify')) {
             for (const name of names)
-                Main.notify(_('%s was force quit').format(name));
+                this._notify(_('%s was force quit').format(name));
         }
     }
 
@@ -294,7 +299,29 @@ export default class ControlKillExtension extends Extension {
         if (this._settings.get_boolean('hint-shown'))
             return;
         this._settings.set_boolean('hint-shown', true);
-        Main.notify(_('Control Kill is ready'),
+        this._notify(_('Control Kill is ready'),
             _('Hold Ctrl in the overview and click a window’s X to force quit it. Running apps also get Force Quit in their right-click menu.'));
+    }
+
+    // Main.notify() files everything under the shell's generic "System" source;
+    // this one says who is speaking. The shell destroys a source once its last
+    // notification goes away, so it is created again when needed.
+    _notify(title, body = null) {
+        if (!this._source) {
+            this._source = new MessageTray.Source({
+                title: 'Control Kill',
+                icon: new Gio.FileIcon({file: this.dir.resolve_relative_path(ICON)}),
+            });
+            this._source.connect('destroy', () => {
+                this._source = null;
+            });
+            Main.messageTray.add(this._source);
+        }
+        this._source.addNotification(new MessageTray.Notification({
+            source: this._source,
+            title,
+            body,
+            isTransient: true,
+        }));
     }
 }
