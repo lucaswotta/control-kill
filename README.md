@@ -104,9 +104,19 @@ inside its sandbox while its real PID is 5776.
 
 ## Compatibility
 
-GNOME Shell 46 to 51. Tested on 48 by hand and by the test suite; the shell
-code it touches was checked against the sources of every listed release. It
-patches private methods of `WindowPreview`, `AppMenu` and `CloseDialog`, so a
+GNOME Shell 46 to 51. CI runs the headless shell test (`make test-shell`) on
+each release in a container:
+
+| Shell | Image            |
+| ----- | ---------------- |
+| 46    | `ubuntu:24.04`   |
+| 47    | `fedora:41`      |
+| 48    | `fedora:42`      |
+| 49    | `fedora:43`      |
+| 50    | `fedora:44`      |
+| 51    | `fedora:rawhide` |
+
+It patches private methods of `WindowPreview`, `AppMenu` and `CloseDialog`, so a
 new GNOME release can break it: if the close buttons misbehave after an
 upgrade, disable it first.
 

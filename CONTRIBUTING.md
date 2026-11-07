@@ -40,6 +40,13 @@ bus and in-memory settings, enables the extension, and kills real windows from
 the shell's test client. It does not touch the running session. Run it before
 sending a change to `extension.js`.
 
+`tests/container.sh` runs it inside a bare Ubuntu or Fedora image, installing
+what the image lacks. CI uses it once per GNOME Shell release; locally:
+
+```sh
+docker run --rm -v "$PWD":/src:ro -w /src fedora:42 tests/container.sh
+```
+
 On Wayland the running shell only loads new extension code at login. The
 preferences window picks up `prefs.js` the next time it opens.
 
