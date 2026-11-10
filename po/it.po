@@ -40,7 +40,7 @@ msgid ""
 msgstr ""
 "Tieni premuto Ctrl nella panoramica delle attività e fai clic sulla X di una "
 "finestra per forzarne l'uscita. Le applicazioni in esecuzione hanno anche "
-"«Uscita forzata» nel loro menù contestuale."
+"«Uscita forzata» nel loro menu contestuale."
 
 #: prefs.js:76
 msgid "How to use"
@@ -55,7 +55,7 @@ msgstr ""
 "Apri la panoramica delle attività e tieni premuto Ctrl: ogni pulsante di "
 "chiusura diventa un pulsante di uscita forzata. Fai clic su uno di essi, "
 "oppure premi Ctrl+Canc su una finestra selezionata con la tastiera. Le "
-"applicazioni in esecuzione hanno anche «Uscita forzata» nel loro menù "
+"applicazioni in esecuzione hanno anche «Uscita forzata» nel loro menu "
 "contestuale."
 
 #: prefs.js:80
