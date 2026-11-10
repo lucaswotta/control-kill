@@ -1,0 +1,160 @@
+# Italian translation for Control Kill.
+# Copyright (C) 2026 Lucas Motta
+# This file is distributed under the same license as the control-kill package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: control-kill\n"
+"Report-Msgid-Bugs-To: https://github.com/lucaswotta/control-kill/issues\n"
+"POT-Creation-Date: 2026-10-10 19:32-0300\n"
+"PO-Revision-Date: 2026-11-08 12:00+0100\n"
+"Last-Translator: mrCabez\n"
+"Language-Team: Italian\n"
+"Language: it\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: extension.js:134
+msgid "Force Quit"
+msgstr "Uscita forzata"
+
+#: extension.js:255
+msgid "Application force quit"
+msgstr "Uscita forzata dell'applicazione"
+
+#: extension.js:258
+#, javascript-format
+msgid "%s was force quit"
+msgstr "Uscita forzata di %s"
+
+#: extension.js:286
+msgid "Control Kill is ready"
+msgstr "Control Kill è pronto"
+
+#: extension.js:287
+msgid ""
+"Hold Ctrl in the overview and click a window’s X to force quit it. Running "
+"apps also get Force Quit in their right-click menu."
+msgstr ""
+"Tieni premuto Ctrl nella panoramica delle attività e fai clic sulla X di una "
+"finestra per forzarne l'uscita. Le applicazioni in esecuzione hanno anche "
+"«Uscita forzata» nel loro menu contestuale."
+
+#: prefs.js:76
+msgid "How to use"
+msgstr "Come si usa"
+
+#: prefs.js:77
+msgid ""
+"Open the Activities overview and hold Ctrl: every close button turns into a "
+"kill button. Click one, or press Ctrl+Delete on a window selected with the "
+"keyboard. Running apps also get Force Quit in their right-click menu."
+msgstr ""
+"Apri la panoramica delle attività e tieni premuto Ctrl: ogni pulsante di "
+"chiusura diventa un pulsante di uscita forzata. Fai clic su uno di essi, "
+"oppure premi Ctrl+Canc su una finestra selezionata con la tastiera. Le "
+"applicazioni in esecuzione hanno anche «Uscita forzata» nel loro menu "
+"contestuale."
+
+#: prefs.js:80
+msgid "Behaviour"
+msgstr "Comportamento"
+
+#: prefs.js:81
+msgid "Ask apps to quit first"
+msgstr "Chiedere prima alle applicazioni di uscire"
+
+#: prefs.js:82
+msgid "Wait three seconds for the app to exit before forcing it"
+msgstr ""
+"Attendere tre secondi che l'applicazione esca prima di forzarne l'uscita"
+
+#: prefs.js:83
+msgid "Show a notification"
+msgstr "Mostrare una notifica"
+
+#: prefs.js:84
+msgid "Name the app after it is force quit"
+msgstr "Indicare quale applicazione è stata forzata a uscire"
+
+#: prefs.js:90
+msgid "About"
+msgstr "Informazioni"
+
+#: prefs.js:91
+msgid "Version"
+msgstr "Versione"
+
+#: prefs.js:92
+msgid "Source code"
+msgstr "Codice sorgente"
+
+#: prefs.js:93
+msgid "Report a problem"
+msgstr "Segnala un problema"
+
+#: prefs.js:107
+msgid "Reset"
+msgstr "Ripristina"
+
+#: prefs.js:114
+msgid "Armed colour"
+msgstr "Colore con Ctrl premuto"
+
+#: prefs.js:115
+msgid "Close buttons while Ctrl is held"
+msgstr "Pulsanti di chiusura mentre si tiene premuto Ctrl"
+
+#: prefs.js:121
+msgid "Appearance"
+msgstr "Aspetto"
+
+#: prefs.js:127
+msgid "Play a sound"
+msgstr "Riprodurre un suono"
+
+#: prefs.js:129
+msgid "Sound file"
+msgstr "File audio"
+
+#: prefs.js:139
+msgid "Play"
+msgstr "Riproduci"
+
+#: prefs.js:148
+msgid "Choose a file…"
+msgstr "Scegli un file…"
+
+#: prefs.js:151
+msgid "Use the default sound"
+msgstr "Usa il suono predefinito"
+
+#: prefs.js:157
+msgid "Default sound"
+msgstr "Suono predefinito"
+
+#: prefs.js:159
+msgid "File not found, the default sound plays instead"
+msgstr "File non trovato, verrà riprodotto il suono predefinito"
+
+#: prefs.js:172
+msgid "Sound"
+msgstr "Suono"
+
+#: prefs.js:173
+msgid "Follows the system setting for alert sounds."
+msgstr "Segue l'impostazione di sistema per i suoni di avviso."
+
+#: prefs.js:181
+msgid "Ogg Vorbis or WAV"
+msgstr "Ogg Vorbis o WAV"
+
+#: prefs.js:188
+msgid "Choose a sound"
+msgstr "Scegli un suono"
+
+#: prefs.js:198
+msgid "Only Ogg Vorbis and WAV files can be played."
+msgstr "È possibile riprodurre solo file Ogg Vorbis e WAV."
